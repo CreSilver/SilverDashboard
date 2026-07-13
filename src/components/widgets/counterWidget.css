@@ -1,0 +1,93 @@
+.counter-widget-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.counter-display-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 1rem;
+}
+
+.counter-number-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+}
+
+.counter-main-number {
+  font-size: 4.5rem; /* Obří dominantní číslo */
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
+  font-family: monospace;
+}
+
+.counter-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+/* Velká klikací tlačítka + a - */
+.btn-counter-click {
+  flex: 1;
+  height: 50px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  color: #f8fafc;
+  font-size: 1.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-counter-click.plus:hover {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: #34d399;
+  color: #34d399;
+  box-shadow: 0 0 15px rgba(52, 211, 153, 0.2);
+}
+
+.btn-counter-click.minus:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: #fca5a5;
+  color: #fca5a5;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+}
+
+/* Drobnější resetovací tlačítko uprostřed */
+.btn-counter-reset {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-counter-reset:hover {
+  color: #dbdee1;
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+}

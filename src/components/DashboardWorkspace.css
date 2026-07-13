@@ -1,0 +1,468 @@
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.01);
+  backdrop-filter: blur(8px);
+}
+
+.dashboard-title {
+  margin: 0;
+  font-size: 1.75rem;
+  color: #f8fafc;
+}
+
+.controls-section {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Hlavní horní tlačítka (+ Tabulka, + Statistika...) */
+.btn-add {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: #e2e8f0;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(4px);
+}
+
+.btn-add:hover {
+  background: rgba(16, 185, 129, 0.18);
+  border-color: #34d399;
+  color: #34d399;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
+  transform: translateY(-1px);
+}
+
+.widgets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-auto-rows: minmax(340px, auto);
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+/* 🚀 HLAVNÍ SKLENĚNÁ KARTA WIDGETU */
+.widget-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 0;
+  overflow: auto; 
+}
+
+.widget-card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* 🚀 FIX: Staré natvrdo vynucené roztažení tabulky 1 / -1 bylo kompletně smazáno odsud! */
+
+.widget-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 0.5rem;
+}
+
+.widget-card-title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #949ba4;
+}
+
+.title-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.input-rename {
+  font-size: 1.75rem;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid #34d399;
+  color: #f2f3f5;
+  border-radius: 8px;
+  padding: 0.2rem 0.5rem;
+  outline: none;
+  font-family: inherit;
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.2);
+}
+
+/* Malá ikona tužky pro editaci */
+.btn-icon {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 6px;
+  opacity: 0.8;
+  transition: all 0.2s;
+  padding: 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  opacity: 1;
+  border-color: #34d399;
+  background: rgba(52, 211, 153, 0.15);
+}
+
+/* Tlačítko Smazat místo */
+.btn-delete {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.05);
+  color: #fca5a5;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: #ef4444;
+  color: #ef4444;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+}
+
+/* Šipky posunu pořadí prvků */
+.widget-order-controls {
+  display: flex;
+  gap: 0.25rem;
+  margin-right: 0.75rem;
+}
+
+.btn-order {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  padding: 0.25rem 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.btn-order:hover:not(:disabled) {
+  border-color: #34d399;
+  background: rgba(52, 211, 153, 0.15);
+}
+
+.btn-order:disabled {
+  opacity: 0.15;
+  cursor: not-allowed;
+  border-color: transparent;
+}
+
+.widget-card.span-h-2 { grid-column: span 2; }
+/* 🚀 NOVINKA: Třída pro velké vícesloupcové tabulky zabírající 3 bloky */
+.widget-card.span-h-3 { grid-column: span 3; } 
+.widget-card.span-v-2 { grid-row: span 2; }
+.widget-card.span-4 { grid-column: span 2; grid-row: span 2; }
+
+.dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Plovoucí skleněné menu */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: -2rem;
+  margin: 0.5rem 0 0 0;
+  padding: 0.5rem;
+  list-style: none;
+  background: rgba(25, 25, 25, 0.90);
+  backdrop-filter: blur(5rem);
+  -webkit-backdrop-filter: blur(5rem);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  min-width: 170px;
+  box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Tlačítka uvnitř menu */
+.dropdown-item-btn {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #e2e8f0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item-btn:hover {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(52, 211, 153, 0.2);
+  color: #34d399;
+}
+
+/* 🗑️ GLOBÁLNÍ MAZACÍ TLAČÍTKO KARTY */
+.btn-delete-card {
+  opacity: 0.4;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-card:hover {
+  opacity: 1 !important;
+  color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.15);
+}
+
+/* =========================================================================
+   ⏳ FIX 2: NEPRŮSTŘELNÝ MOTOR PRO TIMER WIDGET (Ochrana proti ořezávání čísel)
+   ========================================================================= */
+.countdown-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap; 
+  padding: 1rem 0;
+  width: 100%;
+}
+
+.time-segment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 4.2rem; 
+  width: auto !important; 
+}
+
+.time-number {
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #34d399; 
+  font-variant-numeric: tabular-nums; 
+}
+
+.time-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-top: 0.25rem;
+  letter-spacing: 0.5px;
+}
+
+.time-separator {
+  font-size: 2rem;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.15);
+  line-height: 1;
+  padding-bottom: 1rem; 
+}
+
+
+/* =========================================================================
+   📱 RESPONSIVE EXTENSION (Mobilní telefony a menší displaye)
+   ========================================================================= */
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    padding: 1.5rem 1.5rem 1.5rem 4.5rem;
+  }
+
+  .title-container {
+    width: 100%;
+  }
+
+  .dashboard-title, .input-rename {
+    font-size: 1.4rem;
+  }
+
+  .controls-section {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .dropdown-wrapper, .btn-delete {
+    flex: 1;
+    min-width: 130px;
+  }
+
+  .btn-add, .btn-delete {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .dropdown-menu {
+    width: 100%;
+    position: fixed;
+    top: auto;
+    left: 1rem;
+    right: 1rem;
+    bottom: 4.5rem;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
+  }
+
+  .widgets-grid {
+    grid-template-columns: 1fr !important;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  /* 🚀 Přidána .span-h-3 do responzivního resetu na mobilu */
+  .widget-card.span-h-2,
+  .widget-card.span-h-3,
+  .widget-card.span-v-2,
+  .widget-card.span-4 {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+
+  .widget-card {
+    padding: 1rem;
+  }
+
+  .widget-order-controls button[title="Posunout doleva"] {
+    transform: rotate(90deg);
+  }
+
+  .widget-order-controls button[title="Posunout doprava"] {
+    transform: rotate(90deg);
+  }
+}
+
+/* =========================================================================
+   ⚙️ PLOVOUCÍ DROPDOWN MOŽNOSTÍ UVNITŘ KARTY WIDGETU
+   ========================================================================= */
+.widget-context-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.35rem;
+  padding: 0.4rem;
+  list-style: none;
+  background: rgba(25, 25, 25, 0.96); 
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  min-width: 150px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.context-menu-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: #dbdee1;
+  padding: 0.5rem 0.75rem;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.context-menu-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #34d399; 
+}
+
+.context-menu-item.item-danger {
+  color: #fca5a5;
+}
+
+.context-menu-item.item-danger:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444; 
+}
+
+/* =========================================================================
+   🌐 STYL PRO WEBOVÝ EMBED (iframe) & PODPORA PRO VELKÉ ROZMĚRY MŘÍŽKY
+   ========================================================================= */
+
+/* Šířka na 4 sloupce */
+.widget-card.span-h-4 {
+  grid-column: span 4;
+}
+
+/* 3x2 - Ideální pro detailní tabulky nebo velké Trello */
+.widget-card.span-h-3.span-v-2 {
+  grid-column: span 3;
+  grid-row: span 2;
+}
+
+/* 4x2 - Královská velikost přes celou šířku s dostatečným prostorem */
+.widget-card.span-h-4.span-v-2 {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+
+/* Zpětná kompatibilita pro menší monitory, aby se obří widgety nezmáčkly */
+@media (max-width: 1200px) {
+  .widget-card.span-h-3.span-v-2,
+  .widget-card.span-h-4.span-v-2,
+  .widget-card.span-h-4 {
+    grid-column: span 2; /* Na středních displejích se automaticky smrští na rozumnou šířku */
+  }
+}
+
+@media (max-width: 768px) {
+  .widget-card.span-h-3.span-v-2,
+  .widget-card.span-h-4.span-v-2,
+  .widget-card.span-h-4,
+  .widget-card.span-h-2,
+  .widget-card.span-4 {
+    grid-column: span 1 !important; /* Na mobilech skáčou pod sebe v plné šířce */
+    grid-row: span 1 !important;
+  }
+}

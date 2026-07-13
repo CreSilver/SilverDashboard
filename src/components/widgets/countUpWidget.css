@@ -1,0 +1,77 @@
+/* =========================================================================
+   ⏱️ STYL PRO ČÍTAČ ČASU OD MILNÍKU (CountUpWidget)
+   ========================================================================= */
+
+/* Elegantní segmentový displej (pokud by náhodou chyběl z klasického timeru) */
+.countdown-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: auto 0;
+  padding: 0.5rem 0;
+}
+
+.time-segment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  min-width: 54px;
+}
+
+.time-number {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #34d399; /* Smaragdová barva číslic */
+  font-family: monospace;
+  text-shadow: 0 0 10px rgba(52, 211, 153, 0.2);
+}
+
+.time-label {
+  font-size: 0.65rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 0.15rem;
+}
+
+.time-separator {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #475569;
+  padding-bottom: 1rem; /* Vycentrování dvojtečky nad popisky */
+}
+
+/* 🚀 NOVINKA: Skleněný input pro klientský výběr kalendáře a času */
+.input-datetime {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #dbdee1 !important;
+  padding: 0.55rem 0.75rem !important;
+  border-radius: 6px !important;
+  font-size: 0.9rem !important;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+  font-family: inherit;
+}
+
+.input-datetime:focus {
+  border-color: #34d399 !important;
+  background: rgba(0, 0, 0, 0.35) !important;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.1);
+}
+
+/* Ikona kalendáře v prohlížeči (přizpůsobení tmavému režimu) */
+.input-datetime::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) sepia(50%) saturate(1000%) hue-rotate(100deg);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.input-datetime::-webkit-calendar-picker-indicator:hover {
+  transform: scale(1.1);
+}

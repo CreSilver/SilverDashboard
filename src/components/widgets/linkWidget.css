@@ -1,0 +1,59 @@
+.links-widget-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  height: 100%;
+}
+
+/* 🏁 SKLENĚNÁ MŘÍŽKA DLAŽDIC */
+.links-grid-display {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+  gap: 0.75rem;
+  width: 100%;
+}
+
+/* Jednotlivá skleněná karta odkazu */
+.link-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 0.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+  gap: 0.35rem;
+  box-sizing: border-box;
+}
+
+/* 🪄 EMERALDOVÝ GLOW EFFECT NA HOVER */
+.link-tile:hover {
+  transform: translateY(-3px); /* Jemné mechanické povyskočení */
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(52, 211, 153, 0.3);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25), 0 0 15px rgba(52, 211, 153, 0.05);
+}
+
+.link-tile-icon {
+  font-size: 1.4rem;
+}
+
+.link-tile-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Pokud bude název moc dlouhý, zkrátí se třemi tečkami */
+  width: 100%;
+  transition: color 0.15s;
+}
+
+.link-tile:hover .link-tile-label {
+  color: #34d399; /* Text se při hoveru rozsvítí smaragdově */
+}

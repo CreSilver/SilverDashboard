@@ -1,0 +1,81 @@
+.progress-widget-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  height: 100%;
+  justify-content: space-between;
+}
+
+/* Obal pro vycentrování kruhu */
+.progress-chart-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 1rem;
+}
+
+/* 🎯 MATNÝ SKLENĚNÝ PRSTENEC POKROKU */
+.progress-ring {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Tmavé jádro donut grafu pro prostorový efekt */
+.progress-ring-center {
+  width: 108px;
+  height: 108px;
+  background: #141720;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.6), 0 1px 1px rgba(255, 255, 255, 0.02);
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+
+.progress-percentage {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #34d399; /* Emerald */
+  text-shadow: 0 0 15px rgba(52, 211, 153, 0.3);
+  line-height: 1;
+}
+
+.progress-fraction {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 0.4rem;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+/* ... tvé stávající styly v progressWidget.css ponechej ... */
+
+/* 🌈 Skleněný obal pro HTML input type="color" */
+.input-color {
+  width: 38px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: none;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: transform 0.1s ease;
+}
+
+.input-color:hover {
+  transform: scale(1.05);
+}
