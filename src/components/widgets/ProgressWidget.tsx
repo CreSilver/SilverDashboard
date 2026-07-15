@@ -1,14 +1,21 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ProgressWidget as ProgressWidgetType } from '../../types/dashboard';
-import './progressWidget.css';
+import { ProgressWidget as ProgressWidgetType, WidgetGridSize } from '../../types/dashboard';
+import { WidgetSizeSelector } from '../widgetParts/size';
+import { WidgetPinToggle } from '../widgetParts/pinned';
+import './widgets.css'; // 🚀 Přesměrováno na jednotný styl
 
 interface ProgressWidgetProps {
   widget: ProgressWidgetType;
-  isEditing: boolean; // 🚀 Řízeno externě z karty
+  isEditing: boolean; 
   onCloseEdit: () => void;
-  onUpdate?: (updatedTitle: string, updatedData: ProgressWidgetType['data']) => void;
+  onUpdate?: (
+    updatedTitle: string, 
+    updatedData: ProgressWidgetType['data'] & { color?: string }, 
+    gridSize?: WidgetGridSize,
+    isPinned?: boolean
+  ) => void;
 }
 
 function calculatePercentage(current: number, target: number): number {
@@ -21,13 +28,15 @@ function computeRingStyle(color: string, percentage: number) {
 }
 
 interface EditFormProps {
-  widgetId: string; title: string; current: string; target: string; unit: string; color: string; isPinned: boolean;
+  widgetId: string; title: string; current: string; target: string; unit: string; color: string; 
+  gridSize: WidgetGridSize; isPinned: boolean;
   onTitleChange: (val: string) => void; onCurrentChange: (val: string) => void; onTargetChange: (val: string) => void;
-  onUnitChange: (val: string) => void; onColorChange: (val: string) => void; onPinnedChange: (val: boolean) => void; onSave: () => void;
+  onUnitChange: (val: string) => void; onColorChange: (val: string) => void; 
+  onGridSizeChange: (val: WidgetGridSize) => void; onIsPinnedChange: (val: boolean) => void; onSave: () => void;
 }
 function ProgressEditForm({
-  widgetId, title, current, target, unit, color, isPinned,
-  onTitleChange, onCurrentChange, onTargetChange, onUnitChange, onColorChange, onPinnedChange, onSave
+  widgetId, title, current, target, unit, color, gridSize, isPinned,
+  onTitleChange, onCurrentChange, onTargetChange, onUnitChange, onColorChange, onGridSizeChange, onIsPinnedChange, onSave
 }: EditFormProps) {
   return (
     <fieldset className="edit-form-section" style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
@@ -55,11 +64,11 @@ function ProgressEditForm({
           <span style={{ fontSize: '0.85rem', fontFamily: 'monospace', color: '#64748b' }}>{color.toUpperCase()}</span>
         </div>
       </div>
-      <label className="pinned-label">
-        <input type="checkbox" checked={isPinned} onChange={(e) => onPinnedChange(e.target.checked)} />
-        <span>📌 Připnout na hlavní přehled</span>
-      </label>
-      {/* 🚀 Sjednocené zelené tlačítko vespod */}
+
+      {/* 📐 Sdílené prvky pro mřížku a připínání */}
+      <WidgetSizeSelector value={gridSize} onChange={onGridSizeChange} />
+      <WidgetPinToggle isPinned={isPinned} onChange={onIsPinnedChange} />
+
       <button 
         onClick={onSave} 
         className="btn-secondary"
@@ -76,16 +85,20 @@ export default function ProgressWidget({ widget, isEditing, onCloseEdit, onUpdat
   const [currentInput, setCurrentInput] = useState(String(widget.data?.currentValue || 0));
   const [targetInput, setTargetInput] = useState(String(widget.data?.targetValue || 100));
   const [unitInput, setUnitInput] = useState(widget.data?.unit || '');
-  const [isPinned, setIsPinned] = useState(widget.data?.isPinnedToSummary || false);
   const [colorInput, setColorInput] = useState((widget.data as any)?.color || '#34d399');
+  
+  // 🚀 Sjednocený klientský stav pro parametry z rootu (výchozí 2x2)
+  const [gridSizeInput, setGridSizeInput] = useState<WidgetGridSize>(widget.gridSize || '2x2');
+  const [isPinnedInput, setIsPinnedInput] = useState(widget.isPinnedToSummary || false);
 
   useEffect(() => {
     setTitleInput(widget.title);
     setCurrentInput(String(widget.data?.currentValue || 0));
     setTargetInput(String(widget.data?.targetValue || 100));
     setUnitInput(widget.data?.unit || '');
-    setIsPinned(widget.data?.isPinnedToSummary || false);
     setColorInput((widget.data as any)?.color || '#34d399');
+    setGridSizeInput(widget.gridSize || '2x2');
+    setIsPinnedInput(widget.isPinnedToSummary || false);
   }, [widget]);
 
   const current = Number(currentInput) || 0;
@@ -93,15 +106,24 @@ export default function ProgressWidget({ widget, isEditing, onCloseEdit, onUpdat
   const percentage = calculatePercentage(current, target);
 
   const handleSave = () => {
-    if (onUpdate) onUpdate(titleInput, { currentValue: current, targetValue: target, unit: unitInput, isPinnedToSummary: isPinned, color: colorInput } as any);
+    if (onUpdate) {
+      onUpdate(
+        titleInput, 
+        { currentValue: current, targetValue: target, unit: unitInput, color: colorInput } as any, 
+        gridSizeInput, 
+        isPinnedInput
+      );
+    }
     onCloseEdit();
   };
 
   if (isEditing) {
     return (
       <ProgressEditForm
-        widgetId={widget.id} title={titleInput} current={currentInput} target={targetInput} unit={unitInput} color={colorInput} isPinned={isPinned}
-        onTitleChange={setTitleInput} onCurrentChange={setCurrentInput} onTargetChange={setTargetInput} onUnitChange={setUnitInput} onColorChange={setColorInput} onPinnedChange={setIsPinned} onSave={handleSave}
+        widgetId={widget.id} title={titleInput} current={currentInput} target={targetInput} unit={unitInput} color={colorInput} 
+        gridSize={gridSizeInput} isPinned={isPinnedInput}
+        onTitleChange={setTitleInput} onCurrentChange={setCurrentInput} onTargetChange={setTargetInput} onUnitChange={setUnitInput} onColorChange={setColorInput} 
+        onGridSizeChange={setGridSizeInput} onIsPinnedChange={setIsPinnedInput} onSave={handleSave}
       />
     );
   }

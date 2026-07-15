@@ -1,24 +1,33 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { TableWidget as TableWidgetType } from '../../types/dashboard';
-import './tableWidget.css';
+import { TableWidget as TableWidgetType, WidgetGridSize } from '../../types/dashboard';
+import { WidgetSizeSelector } from '../widgetParts/size';
+import { WidgetPinToggle } from '../widgetParts/pinned';
+import './widgets.css'; // 🚀 Přesunuto pod jednotný soubor widgets.css
 
 interface TableWidgetProps {
   widget: TableWidgetType;
-  isEditing: boolean; // 🚀 Řízeno externě z karty
+  isEditing: boolean; 
   onCloseEdit: () => void;
-  onUpdate: (updatedTitle: string, updatedData: TableWidgetType['data']) => void;
+  onUpdate: (
+    updatedTitle: string, 
+    updatedData: TableWidgetType['data'],
+    gridSize?: WidgetGridSize,
+    isPinned?: boolean
+  ) => void;
 }
 
 interface EditFormProps {
-  widgetId: string; title: string; headers: string[]; rows: string[][];
+  widgetId: string; title: string; headers: string[]; rows: string[][]; gridSize: WidgetGridSize; isPinned: boolean;
   onTitleChange: (val: string) => void; onHeaderChange: (index: number, val: string) => void; onCellChange: (rowIndex: number, colIndex: number, val: string) => void;
-  onRemoveColumn: (colIndex: number) => void; onRemoveRow: (rowIndex: number) => void; onAddColumn: () => void; onAddRow: () => void; onSave: () => void;
+  onRemoveColumn: (colIndex: number) => void; onRemoveRow: (rowIndex: number) => void; onAddColumn: () => void; onAddRow: () => void; 
+  onGridSizeChange: (val: WidgetGridSize) => void; onIsPinnedChange: (val: boolean) => void; onSave: () => void;
 }
+
 function TableEditForm({
-  widgetId, title, headers, rows,
-  onTitleChange, onHeaderChange, onCellChange, onRemoveColumn, onRemoveRow, onAddColumn, onAddRow, onSave
+  widgetId, title, headers, rows, gridSize, isPinned,
+  onTitleChange, onHeaderChange, onCellChange, onRemoveColumn, onRemoveRow, onAddColumn, onAddRow, onGridSizeChange, onIsPinnedChange, onSave
 }: EditFormProps) {
   return (
     <fieldset className="edit-form-section" style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
@@ -29,7 +38,6 @@ function TableEditForm({
         <input id={`table-title-${widgetId}`} type="text" value={title} onChange={(e) => onTitleChange(e.target.value)} className="input-stat" style={{ flex: 1 }} />
       </div>
 
-      {/* 🚀 Ovládací prvky struktury se přesunuly přímo k tabulce */}
       <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.2rem' }}>
         <button type="button" onClick={onAddColumn} className="btn-secondary" style={{ padding: '0.35rem 0.6rem', fontSize: '0.8rem' }}>➕ Přidat sloupec</button>
         <button type="button" onClick={onAddRow} className="btn-secondary" style={{ padding: '0.35rem 0.6rem', fontSize: '0.8rem' }}>➕ Přidat řádek</button>
@@ -65,7 +73,10 @@ function TableEditForm({
         </table>
       </div>
 
-      {/* 🚀 Sjednocené zelené tlačítko vespod */}
+      {/* 📐 UNIFIKOVANÉ ČÁSTI: Dynamic mřížka (výběr Šířky a Výšky nezávisle) a připínání */}
+      <WidgetSizeSelector value={gridSize} onChange={onGridSizeChange} />
+      <WidgetPinToggle isPinned={isPinned} onChange={onIsPinnedChange} />
+
       <button 
         onClick={onSave} 
         className="btn-secondary"
@@ -81,15 +92,26 @@ export default function TableWidget({ widget, isEditing, onCloseEdit, onUpdate }
   const [titleInput, setTitleInput] = useState(widget.title);
   const [headers, setHeaders] = useState<string[]>(widget.data?.headers || ['Sloupec 1']);
   const [rows, setRows] = useState<string[][]>(widget.data?.rows || [['Data']]);
+  
+  // 🚀 Zavedení klientského stavu pro root parametry (výchozí 2x2)
+  const [gridSizeInput, setGridSizeInput] = useState<WidgetGridSize>(widget.gridSize || '2x2');
+  const [isPinnedInput, setIsPinnedInput] = useState(widget.isPinnedToSummary || false);
 
   useEffect(() => {
     setTitleInput(widget.title);
     setHeaders(widget.data?.headers || ['Sloupec 1']);
     setRows(widget.data?.rows || [['Data']]);
+    setGridSizeInput(widget.gridSize || '2x2');
+    setIsPinnedInput(widget.isPinnedToSummary || false);
   }, [widget]);
 
   const handleSave = () => {
-    onUpdate(titleInput, { headers, rows });
+    onUpdate(
+      titleInput, 
+      { headers, rows }, 
+      gridSizeInput, 
+      isPinnedInput
+    );
     onCloseEdit();
   };
 
@@ -102,7 +124,12 @@ export default function TableWidget({ widget, isEditing, onCloseEdit, onUpdate }
         onRemoveColumn={(idx) => { setHeaders(headers.filter((_, i) => i !== idx)); setRows(rows.map(r => r.filter((_, i) => i !== idx))); }}
         onRemoveRow={(idx) => setRows(rows.filter((_, i) => i !== idx))}
         onAddColumn={() => { setHeaders([...headers, `Sloupec ${headers.length + 1}`]); setRows(rows.map(r => [...r, ''])); }}
-        onAddRow={() => setRows([...rows, Array(headers.length).fill('')])} onSave={handleSave}
+        onAddRow={() => setRows([...rows, Array(headers.length).fill('')])} 
+        onSave={handleSave}
+        gridSize={gridSizeInput}
+        onGridSizeChange={setGridSizeInput}
+        isPinned={isPinnedInput}
+        onIsPinnedChange={setIsPinnedInput}
       />
     );
   }

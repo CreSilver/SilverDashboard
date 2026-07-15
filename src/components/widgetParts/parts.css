@@ -1,0 +1,114 @@
+/* =========================================================================
+   🛠️ SPOLEČNÉ FIREMNÍ PRVKY WIDGETŮ (widgetParts)
+   ========================================================================= */
+
+/* Společný flex řádek */
+.widget-part-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Zarovnání prvků vedle sebe (pro přepínač špendlíku) */
+.widget-part-row.align-center {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.2rem 0;
+}
+
+/* Popisek pro části formuláře */
+.widget-part-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #94a3b8; /* Tlumená moderní šedá */
+  user-select: none;
+}
+
+/* Obal pro dva rozměrové selecty */
+.widget-size-selectors-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.widget-size-select-wrapper {
+  flex: 1;
+}
+
+/* Styly pro rozměrové selecty */
+.widget-part-select {
+  width: 100%;
+  background: #1a1a1a !important;
+  color: #dbdee1 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 6px !important;
+  padding: 0.5rem 0.6rem !important;
+  font-size: 0.9rem !important;
+  outline: none !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.widget-part-select:focus {
+  border-color: #34d399 !important; /* Smaragdový fokus */
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.15);
+}
+
+/* Oddělovací křížek mezi selecty */
+.widget-size-separator {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #475569;
+  user-select: none;
+  padding: 0 0.1rem;
+}
+
+/* Stylové interaktivní tlačítko pro špendlík */
+.widget-pin-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.widget-pin-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #f1f5f9;
+}
+
+/* Aktivní připnutý stav (Smaragdový svit) */
+.widget-pin-toggle-btn.pinned-active {
+  background: rgba(52, 211, 153, 0.08);
+  border-color: rgba(52, 211, 153, 0.3);
+  color: #34d399;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.1);
+}
+
+.widget-pin-toggle-btn.pinned-active:hover {
+  background: rgba(52, 211, 153, 0.12);
+  border-color: rgba(52, 211, 153, 0.45);
+}
+
+.widget-pin-toggle-btn .pin-icon {
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.widget-pin-toggle-btn:hover .pin-icon {
+  transform: translateY(-1px);
+}

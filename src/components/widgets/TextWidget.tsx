@@ -1,28 +1,40 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { TextWidget as TextWidgetType } from '../../types/dashboard';
-import './textWidget.css';
+import { TextWidget as TextWidgetType, WidgetGridSize } from '../../types/dashboard';
+import { WidgetSizeSelector } from '../widgetParts/size';
+import { WidgetPinToggle } from '../widgetParts/pinned';
+import './widgets.css'; // 🚀 Přesunuto pod jednotný soubor widgets.css
 
 interface TextWidgetProps {
   widget: TextWidgetType;
-  isEditing: boolean; // 🚀 Řízeno externě z karty
+  isEditing: boolean; 
   onCloseEdit: () => void;
-  onUpdate?: (updatedTitle: string, updatedData: TextWidgetType['data']) => void;
+  onUpdate?: (
+    updatedTitle: string, 
+    updatedData: TextWidgetType['data'],
+    gridSize?: WidgetGridSize,
+    isPinned?: boolean
+  ) => void;
 }
 
 interface EditFormProps {
   widgetId: string; 
   title: string; 
   text: string; 
-  gridSize: string; // 🚀 Přidáno pro řízení rozměru formuláře
+  gridSize: WidgetGridSize; 
+  isPinned: boolean;
   onTitleChange: (val: string) => void; 
   onTextChange: (val: string) => void; 
-  onGridSizeChange: (val: any) => void; // 🚀 Callback pro změnu rozměru
+  onGridSizeChange: (val: WidgetGridSize) => void; 
+  onIsPinnedChange: (val: boolean) => void;
   onSave: () => void;
 }
 
-function TextEditForm({ widgetId, title, text, gridSize, onTitleChange, onTextChange, onGridSizeChange, onSave }: EditFormProps) {
+function TextEditForm({ 
+  widgetId, title, text, gridSize, isPinned, 
+  onTitleChange, onTextChange, onGridSizeChange, onIsPinnedChange, onSave 
+}: EditFormProps) {
   return (
     <fieldset className="edit-form-section" style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem', height: '100%' }}>
       <legend style={{ display: 'none' }}>Úprava textu poznámky</legend>
@@ -32,34 +44,10 @@ function TextEditForm({ widgetId, title, text, gridSize, onTitleChange, onTextCh
       </div>
       <textarea value={text} onChange={(e) => onTextChange(e.target.value)} className="textarea-text" style={{ flex: 1, minHeight: '120px' }} placeholder="Sem napiš vzkaz..." />
       
-      {/* 🚀 NOVINKA: Výběr velikosti textového boxu v mřížce */}
-      <div className="widget-title-row">
-        <label className="label-stat" htmlFor={`text-g-${widgetId}`}>Rozměry na ploše:</label>
-        <select 
-          id={`text-g-${widgetId}`} 
-          value={gridSize} 
-          onChange={(e) => onGridSizeChange(e.target.value as any)} 
-          className="input-stat" 
-          style={{ 
-            flex: 1, 
-            background: '#1a1a1a', 
-            color: '#dbdee1', 
-            border: '1px solid rgba(255,255,255,0.08)', 
-            borderRadius: '6px', 
-            padding: '0.4rem',
-            cursor: 'pointer'
-          }}
-        >
-          <option value="1x1">Malý čtverec (1x1)</option>
-          <option value="2x1">Široká nudle (2x1)</option>
-          <option value="1x2">Vysoký sloupec (1x2)</option>
-          <option value="2x2">Standardní kostka (2x2)</option>
-          <option value="3x2">Velký přehled (3x2)</option>
-          <option value="4x2">Královská velikost (4x2)</option>
-        </select>
-      </div>
+      {/* 📐 UNIFIKOVANÉ ČÁSTI: Změna mřížky (16 kombinací) a připínání */}
+      <WidgetSizeSelector value={gridSize} onChange={onGridSizeChange} />
+      <WidgetPinToggle isPinned={isPinned} onChange={onIsPinnedChange} />
 
-      {/* 🚀 Sjednocené zelené tlačítko vespod */}
       <button 
         onClick={onSave} 
         className="btn-secondary"
@@ -74,26 +62,35 @@ function TextEditForm({ widgetId, title, text, gridSize, onTitleChange, onTextCh
 export default function TextWidget({ widget, isEditing, onCloseEdit, onUpdate }: TextWidgetProps) {
   const [titleInput, setTitleInput] = useState(widget.title);
   const [textInput, setTextInput] = useState(widget.data?.text || '');
-  // 🚀 Zaveden klientský stav s výchozí hodnotou '2x1' pro starší nepopsané poznámky
-  const [gridSizeInput, setGridSizeInput] = useState(widget.data?.gridSize || '2x1');
+  
+  // 🚀 Zavedení klientského stavu pro root parametry (výchozí 2x1)
+  const [gridSizeInput, setGridSizeInput] = useState<WidgetGridSize>(widget.gridSize || '2x1');
+  const [isPinnedInput, setIsPinnedInput] = useState(widget.isPinnedToSummary || false);
 
   useEffect(() => {
     setTitleInput(widget.title);
     setTextInput(widget.data?.text || '');
-    setGridSizeInput(widget.data?.gridSize || '2x1');
+    setGridSizeInput(widget.gridSize || '2x1');
+    setIsPinnedInput(widget.isPinnedToSummary || false);
   }, [widget]);
 
   const handleSave = () => {
-    // 🚀 Při uložení pošleme zpět do workspace jak text, tak novou velikost
-    if (onUpdate) onUpdate(titleInput, { text: textInput, gridSize: gridSizeInput });
+    if (onUpdate) {
+      onUpdate(
+        titleInput, 
+        { text: textInput }, 
+        gridSizeInput, 
+        isPinnedInput
+      );
+    }
     onCloseEdit();
   };
 
   if (isEditing) {
     return (
       <TextEditForm
-        widgetId={widget.id} title={titleInput} text={textInput} gridSize={gridSizeInput}
-        onTitleChange={setTitleInput} onTextChange={setTextInput} onGridSizeChange={setGridSizeInput} onSave={handleSave}
+        widgetId={widget.id} title={titleInput} text={textInput} gridSize={gridSizeInput} isPinned={isPinnedInput}
+        onTitleChange={setTitleInput} onTextChange={setTextInput} onGridSizeChange={setGridSizeInput} onIsPinnedChange={setIsPinnedInput} onSave={handleSave}
       />
     );
   }

@@ -1,0 +1,721 @@
+/* =========================================================================
+   🌐 SILVERDASHBOARD — UNIFIKOVANÝ STYL PRO VŠECHNY WIDGETY (widgets.css)
+   ========================================================================= */
+
+/* -------------------------------------------------------------------------
+   1. CODESHARED & FORM ELEMENTS (Společné styly formulářů a tlačítek)
+   ------------------------------------------------------------------------- */
+.edit-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.widget-title-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.6rem;
+}
+
+.label-stat {
+  font-size: 0.85rem;
+  color: #949ba4;
+  min-width: 90px;
+  user-select: none;
+}
+
+.form-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  width: 100%;
+}
+
+/* Skleněné textové vstupy */
+.input-stat {
+  padding: 0.45rem 0.6rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.input-stat:focus {
+  border-color: #34d399; /* Smaragdový akcent */
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.2);
+}
+
+/* Skleněný kalendářní vstup */
+.input-datetime {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #dbdee1 !important;
+  padding: 0.55rem 0.75rem !important;
+  border-radius: 6px !important;
+  font-size: 0.9rem !important;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+  font-family: inherit;
+}
+
+.input-datetime:focus {
+  border-color: #34d399 !important;
+  background: rgba(0, 0, 0, 0.35) !important;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.12);
+}
+
+.input-datetime::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) sepia(50%) saturate(1000%) hue-rotate(100deg);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.input-datetime::-webkit-calendar-picker-indicator:hover {
+  transform: scale(1.1);
+}
+
+/* Barevné tlamy a kapátka */
+.input-color {
+  width: 38px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: none;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: transform 0.1s ease;
+}
+
+.input-color:hover {
+  transform: scale(1.05);
+}
+
+/* Sjednocená akční tlačítka */
+.btn-secondary {
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.pinned-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #949ba4;
+  margin-top: 0.25rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* -------------------------------------------------------------------------
+   2. TEXT WIDGET (Poznámkový blok)
+   ------------------------------------------------------------------------- */
+.textarea-text {
+  width: 100%;
+  min-height: 140px;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.textarea-text:focus {
+  border-color: #34d399;
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.2);
+}
+
+.text-preview-box {
+  color: #e2e8f0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* -------------------------------------------------------------------------
+   3. TABLE WIDGET (Firemní datové sady)
+   ------------------------------------------------------------------------- */
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.dashboard-table th {
+  background: rgba(255, 255, 255, 0.03);
+  color: #94a3b8;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.9rem;
+}
+
+.dashboard-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: #e2e8f0;
+  font-size: 0.9rem;
+}
+
+.dashboard-table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.table-input {
+  width: 100%;
+  padding: 0.4rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+.table-input:focus {
+  border-color: #34d399;
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.2);
+}
+
+.btn-cell-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ef4444;
+  opacity: 0.6;
+  font-size: 0.9rem;
+  transition: opacity 0.15s;
+}
+
+.btn-cell-delete:hover { 
+  opacity: 1; 
+}
+
+/* -------------------------------------------------------------------------
+   4. TIMER & COUNTUP WIDGETS (Časomíry a Milníky)
+   ------------------------------------------------------------------------- */
+.countdown-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+  padding: 0.8rem 0;
+  flex-wrap: nowrap !important;
+}
+
+.time-segment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 56px;
+}
+
+.time-number {
+  font-size: 2.2rem;
+  font-weight: 700;
+  font-family: monospace;
+  color: #f8fafc;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.time-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 0.4rem;
+  letter-spacing: 0.05em;
+}
+
+.time-separator {
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.12);
+  padding-bottom: 0.75rem;
+}
+
+.timer-message {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #34d399;
+  text-align: center;
+  text-shadow: 0 0 15px rgba(52, 211, 153, 0.25);
+}
+
+.timer-urgent .time-number {
+  color: #fca5a5;
+  text-shadow: 0 0 15px rgba(239, 68, 68, 0.35);
+  animation: urgentPulse 1.5s infinite ease-in-out;
+}
+
+@keyframes urgentPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* -------------------------------------------------------------------------
+   5. BANNER WIDGET (Velkoformátová hlášení)
+   ------------------------------------------------------------------------- */
+.banner-display-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex: 1;
+  padding: 1.5rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.banner-main-text {
+  font-weight: 800;
+  font-size: 1.85rem;
+  line-height: 1.3;
+  letter-spacing: -0.03em;
+  word-break: break-word;
+  margin: 0;
+}
+
+.char-counter {
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: #64748b;
+  text-align: right;
+  margin-top: -0.25rem;
+}
+
+/* -------------------------------------------------------------------------
+   6. COUNTER WIDGET (Počítadlo prokliků / kusů)
+   ------------------------------------------------------------------------- */
+.counter-display-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 1rem;
+}
+
+.counter-number-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem;
+}
+
+.counter-main-number {
+  font-size: 4.5rem;
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
+  font-family: monospace;
+}
+
+.counter-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.btn-counter-click {
+  flex: 1;
+  height: 50px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  color: #f8fafc;
+  font-size: 1.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-counter-click.plus:hover {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: #34d399;
+  color: #34d399;
+  box-shadow: 0 0 15px rgba(52, 211, 153, 0.18);
+}
+
+.btn-counter-click.minus:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: #fca5a5;
+  color: #fca5a5;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+}
+
+.btn-counter-reset-inside {
+  padding: 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94a3b8;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-counter-reset-inside:hover {
+  color: #dbdee1;
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* -------------------------------------------------------------------------
+   7. EMBED WIDGET (Google Sheets, Kalendáře, externí iframy)
+   ------------------------------------------------------------------------- */
+.embed-widget-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  min-height: 260px;
+}
+
+.embed-iframe-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #090a0f;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.embed-iframe-container::before {
+  content: "Načítám externí web...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.embed-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+
+/* -------------------------------------------------------------------------
+   8. IMAGE WIDGET (Uživatelské fotogalerie / screenshoty)
+   ------------------------------------------------------------------------- */
+.image-upload-zone {
+  border: 2px dashed rgba(16, 185, 129, 0.3);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  border-radius: 10px;
+  cursor: pointer;
+  background: rgba(16, 185, 129, 0.03);
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.image-upload-zone:hover {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.08);
+  color: #34d399;
+}
+
+.display-image {
+  width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.image-caption {
+  font-size: 0.85rem;
+  color: #64748b;
+  text-align: center;
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+
+.image-meta-badge {
+  font-size: 0.72rem;
+  font-family: monospace;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  color: #64748b;
+  width: fit-content;
+  margin: 0.4rem auto 0 auto;
+}
+
+/* -------------------------------------------------------------------------
+   9. LINKS WIDGET (Záložky / Firemní rozcestník)
+   ------------------------------------------------------------------------- */
+.links-grid-display {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.link-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 0.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+  gap: 0.35rem;
+  box-sizing: border-box;
+}
+
+.link-tile:hover {
+  transform: translateY(-3px);
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(52, 211, 153, 0.3);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25), 0 0 15px rgba(52, 211, 153, 0.05);
+}
+
+.link-tile-icon {
+  font-size: 1.4rem;
+}
+
+.link-tile-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  transition: color 0.15s;
+}
+
+.link-tile:hover .link-tile-label {
+  color: #34d399;
+}
+
+/* -------------------------------------------------------------------------
+   10. PROGRESS WIDGET (Kruhové ukazatele plnění)
+   ------------------------------------------------------------------------- */
+.progress-chart-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 0.5rem;
+}
+
+.progress-ring {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.progress-ring-center {
+  width: 102px;
+  height: 102px;
+  background: #141720;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.6), 0 1px 1px rgba(255, 255, 255, 0.02);
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+
+.progress-percentage {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #34d399;
+  text-shadow: 0 0 15px rgba(52, 211, 153, 0.25);
+  line-height: 1;
+}
+
+.progress-fraction {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 0.35rem;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+/* -------------------------------------------------------------------------
+   11. STAT WIDGET (Analytické Sloupcové & Koláčové grafy)
+   ------------------------------------------------------------------------- */
+.chart-display-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  padding: 0.5rem;
+  flex: 1;
+}
+
+.bar-chart-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  width: 100%;
+  height: 130px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 0.3rem;
+  gap: 0.5rem;
+}
+
+.bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.bar-pill {
+  width: 100%;
+  max-width: 35px;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+  min-height: 4px;
+}
+
+.bar-value {
+  font-size: 0.72rem;
+  color: #949ba4;
+  margin-bottom: 0.2rem;
+}
+
+.pie-chart-circle {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  width: 100%;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: #b5bac1;
+}
+
+.legend-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* -------------------------------------------------------------------------
+   📱 AUTOMATICKÁ RESPONSIVITA (Kompaktní hodiny pro úzké grid boxy)
+   ------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+  .countdown-display {
+    gap: 0.3rem !important;
+  }
+  .time-segment {
+    min-width: 44px !important;
+  }
+  .time-number {
+    font-size: 1.65rem !important;
+  }
+  .time-separator {
+    font-size: 1.3rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+  .time-label {
+    font-size: 0.6rem !important;
+  }
+}

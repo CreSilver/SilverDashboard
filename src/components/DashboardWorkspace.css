@@ -427,42 +427,35 @@
 }
 
 /* =========================================================================
-   🌐 STYL PRO WEBOVÝ EMBED (iframe) & PODPORA PRO VELKÉ ROZMĚRY MŘÍŽKY
+   📐 UNIFIKOVANÝ MATICOVÝ DEKODÉR ROZMĚRŮ (1x1 až 4x4)
    ========================================================================= */
 
-/* Šířka na 4 sloupce */
-.widget-card.span-h-4 {
-  grid-column: span 4;
-}
+/* Definice pro ŠÍŘKU (sloupce) */
+.widget-card.w-span-1 { grid-column: span 1; }
+.widget-card.w-span-2 { grid-column: span 2; }
+.widget-card.w-span-3 { grid-column: span 3; }
+.widget-card.w-span-4 { grid-column: span 4; }
 
-/* 3x2 - Ideální pro detailní tabulky nebo velké Trello */
-.widget-card.span-h-3.span-v-2 {
-  grid-column: span 3;
-  grid-row: span 2;
-}
+/* Definice pro VÝŠKU (řádky) */
+.widget-card.h-span-1 { grid-row: span 1; }
+.widget-card.h-span-2 { grid-row: span 2; }
+.widget-card.h-span-3 { grid-row: span 3; }
+.widget-card.h-span-4 { grid-row: span 4; }
 
-/* 4x2 - Královská velikost přes celou šířku s dostatečným prostorem */
-.widget-card.span-h-4.span-v-2 {
-  grid-column: span 4;
-  grid-row: span 2;
-}
-
-/* Zpětná kompatibilita pro menší monitory, aby se obří widgety nezmáčkly */
+/* Responzivní pojistka pro střední monitory a tablety */
 @media (max-width: 1200px) {
-  .widget-card.span-h-3.span-v-2,
-  .widget-card.span-h-4.span-v-2,
-  .widget-card.span-h-4 {
-    grid-column: span 2; /* Na středních displejích se automaticky smrští na rozumnou šířku */
+  .widget-card.w-span-3,
+  .widget-card.w-span-4 {
+    grid-column: span 2; /* Na menších obrazovkách se extrémně široké karty zmenší na max 2 sloupce */
   }
 }
 
+/* Responzivní pojistka pro mobilní telefony */
 @media (max-width: 768px) {
-  .widget-card.span-h-3.span-v-2,
-  .widget-card.span-h-4.span-v-2,
-  .widget-card.span-h-4,
-  .widget-card.span-h-2,
-  .widget-card.span-4 {
-    grid-column: span 1 !important; /* Na mobilech skáčou pod sebe v plné šířce */
-    grid-row: span 1 !important;
+  .widget-card.w-span-1, .widget-card.w-span-2, .widget-card.w-span-3, .widget-card.w-span-4 {
+    grid-column: span 1 !important; /* Na mobilech skočí vše pod sebe na plnou šířku */
+  }
+  .widget-card.h-span-1, .widget-card.h-span-2, .widget-card.h-span-3, .widget-card.h-span-4 {
+    grid-row: span 1 !important; /* Výška se srovná na základní řádek */
   }
 }

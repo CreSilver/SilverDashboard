@@ -1,14 +1,21 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { LinksWidget as LinksWidgetType, LinkItem } from '../../types/dashboard';
-import './linkWidget.css';
+import { LinksWidget as LinksWidgetType, LinkItem, WidgetGridSize } from '../../types/dashboard';
+import { WidgetSizeSelector } from '../widgetParts/size';
+import { WidgetPinToggle } from '../widgetParts/pinned';
+import './widgets.css'; // 🚀 Přesměrováno na jednotný styl
 
 interface LinksWidgetProps {
   widget: LinksWidgetType;
-  isEditing: boolean; // 🚀 Řízeno externě z karty
+  isEditing: boolean; 
   onCloseEdit: () => void;
-  onUpdate?: (updatedTitle: string, updatedData: LinksWidgetType['data']) => void;
+  onUpdate?: (
+    updatedTitle: string, 
+    updatedData: LinksWidgetType['data'],
+    gridSize?: WidgetGridSize,
+    isPinned?: boolean
+  ) => void;
 }
 
 function formatUrl(url: string): string {
@@ -18,25 +25,16 @@ function formatUrl(url: string): string {
 }
 
 interface EditFormProps {
-  widgetId: string;
-  title: string;
-  items: LinkItem[];
-  isPinned: boolean;
-  newIcon: string;
-  newLabel: string;
-  newUrl: string;
-  onTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onIconChange: (val: string) => void;
-  onLabelChange: (val: string) => void;
-  onUrlChange: (val: string) => void;
-  onAddLink: () => void;
-  onRemoveLink: (id: string) => void;
-  onPinnedChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSave: () => void;
+  widgetId: string; title: string; items: LinkItem[]; newIcon: string; newLabel: string; newUrl: string;
+  gridSize: WidgetGridSize; isPinned: boolean;
+  onTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void; onIconChange: (val: string) => void;
+  onLabelChange: (val: string) => void; onUrlChange: (val: string) => void;
+  onAddLink: () => void; onRemoveLink: (id: string) => void; 
+  onGridSizeChange: (val: WidgetGridSize) => void; onIsPinnedChange: (val: boolean) => void; onSave: () => void;
 }
 function LinksEditForm({
-  widgetId, title, items, isPinned, newIcon, newLabel, newUrl,
-  onTitleChange, onIconChange, onLabelChange, onUrlChange, onAddLink, onRemoveLink, onPinnedChange, onSave
+  widgetId, title, items, newIcon, newLabel, newUrl, gridSize, isPinned,
+  onTitleChange, onIconChange, onLabelChange, onUrlChange, onAddLink, onRemoveLink, onGridSizeChange, onIsPinnedChange, onSave
 }: EditFormProps) {
   return (
     <fieldset className="edit-form-section" style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
@@ -68,12 +66,10 @@ function LinksEditForm({
         </div>
       </div>
 
-      <label className="pinned-label">
-        <input type="checkbox" checked={isPinned} onChange={onPinnedChange} />
-        <span>📌 Připnout na hlavní přehled</span>
-      </label>
+      {/* 📐 Sdílené prvky pro mřížku a připínání */}
+      <WidgetSizeSelector value={gridSize} onChange={onGridSizeChange} />
+      <WidgetPinToggle isPinned={isPinned} onChange={onIsPinnedChange} />
 
-      {/* 🚀 Sjednocené zelené tlačítko vespod */}
       <button 
         onClick={onSave} 
         className="btn-secondary"
@@ -88,38 +84,43 @@ function LinksEditForm({
 export default function LinksWidget({ widget, isEditing, onCloseEdit, onUpdate }: LinksWidgetProps) {
   const items = widget.data?.items || [];
   const [titleInput, setTitleInput] = useState(widget.title);
-  const [isPinned, setIsPinned] = useState(widget.data?.isPinnedToSummary || false);
   const [newLabel, setNewLabel] = useState('');
   const [newUrl, setNewUrl] = useState('');
   const [newIcon, setNewIcon] = useState('🔗');
+  
+  // 🚀 Sjednocený klientský stav pro parametry z rootu (výchozí 2x2)
+  const [gridSizeInput, setGridSizeInput] = useState<WidgetGridSize>(widget.gridSize || '2x2');
+  const [isPinnedInput, setIsPinnedInput] = useState(widget.isPinnedToSummary || false);
 
   useEffect(() => {
     setTitleInput(widget.title);
-    setIsPinned(widget.data?.isPinnedToSummary || false);
+    setGridSizeInput(widget.gridSize || '2x2');
+    setIsPinnedInput(widget.isPinnedToSummary || false);
   }, [widget]);
 
   const handleAddLink = () => {
     if (!newLabel.trim() || !newUrl.trim()) return;
     const newItem = { id: crypto.randomUUID(), label: newLabel.trim(), url: formatUrl(newUrl), icon: newIcon.trim() || '🔗' };
-    if (onUpdate) onUpdate(titleInput, { items: [...items, newItem], isPinnedToSummary: isPinned });
+    if (onUpdate) onUpdate(titleInput, { items: [...items, newItem] }, gridSizeInput, isPinnedInput);
     setNewLabel(''); setNewUrl(''); setNewIcon('🔗');
   };
 
   const handleRemoveLink = (id: string) => {
-    if (onUpdate) onUpdate(titleInput, { items: items.filter(item => item.id !== id), isPinnedToSummary: isPinned });
+    if (onUpdate) onUpdate(titleInput, { items: items.filter(item => item.id !== id) }, gridSizeInput, isPinnedInput);
   };
 
   const handleSaveMeta = () => {
-    if (onUpdate) onUpdate(titleInput, { items, isPinnedToSummary: isPinned });
+    if (onUpdate) onUpdate(titleInput, { items }, gridSizeInput, isPinnedInput);
     onCloseEdit();
   };
 
   if (isEditing) {
     return (
       <LinksEditForm
-        widgetId={widget.id} title={titleInput} items={items} isPinned={isPinned} newIcon={newIcon} newLabel={newLabel} newUrl={newUrl}
+        widgetId={widget.id} title={titleInput} items={items} gridSize={gridSizeInput} isPinned={isPinnedInput}
+        newIcon={newIcon} newLabel={newLabel} newUrl={newUrl}
         onTitleChange={(e) => setTitleInput(e.target.value)} onIconChange={setNewIcon} onLabelChange={setNewLabel} onUrlChange={setNewUrl}
-        onAddLink={handleAddLink} onRemoveLink={handleRemoveLink} onPinnedChange={(e) => setIsPinned(e.target.checked)} onSave={handleSaveMeta}
+        onAddLink={handleAddLink} onRemoveLink={handleRemoveLink} onGridSizeChange={setGridSizeInput} onIsPinnedChange={setIsPinnedInput} onSave={handleSaveMeta}
       />
     );
   }

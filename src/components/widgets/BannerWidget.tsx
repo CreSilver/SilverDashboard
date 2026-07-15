@@ -1,20 +1,28 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { BannerWidget as BannerWidgetType } from '../../types/dashboard';
-import './bannerWidget.css';
+import React, { useState, useEffect } from 'react';
+import { BannerWidget as BannerWidgetType, WidgetGridSize } from '../../types/dashboard';
+import { WidgetSizeSelector } from '../widgetParts/size';
+import { WidgetPinToggle } from '../widgetParts/pinned';
+import './widgets.css'; // 🚀 Přesměrováno na jednotný styl
 
 interface BannerWidgetProps {
   widget: BannerWidgetType;
-  isEditing: boolean; // 🚀 Řízeno externě z karty
+  isEditing: boolean; 
   onCloseEdit: () => void;
-  onUpdate?: (updatedTitle: string, updatedData: BannerWidgetType['data']) => void;
+  onUpdate?: (
+    updatedTitle: string, 
+    updatedData: BannerWidgetType['data'],
+    gridSize?: WidgetGridSize,
+    isPinned?: boolean
+  ) => void;
 }
 
+// 🚀 DYNAMICKÝ LIMIT: Povolí 35 znaků na každý sloupec šířky (1x až 4x)
 function getGridMaxLength(size: string): number {
-  if (size === '1x1') return 35;
-  if (size === '2x1' || size === '1x2') return 70;
-  return 140;
+  const [w] = size.split('x');
+  const width = Number(w) || 2;
+  return width * 35;
 }
 
 function computeBannerStyle(bgColor: string, textColor: string) {
@@ -27,25 +35,15 @@ function computeBannerStyle(bgColor: string, textColor: string) {
 }
 
 interface EditFormProps {
-  widgetId: string;
-  title: string;
-  text: string;
-  bgColor: string;
-  textColor: string;
-  gridSize: string;
-  isPinned: boolean;
-  maxLength: number;
-  onTitleChange: (val: string) => void;
-  onTextChange: (val: string) => void;
-  onGridSizeChange: (val: any) => void;
-  onBgColorChange: (val: string) => void;
-  onTextColorChange: (val: string) => void;
-  onPinnedChange: (val: boolean) => void;
-  onSave: () => void; // 🚀 Callback pro uložení
+  widgetId: string; title: string; text: string; bgColor: string; textColor: string;
+  gridSize: WidgetGridSize; isPinned: boolean; maxLength: number;
+  onTitleChange: (val: string) => void; onTextChange: (val: string) => void;
+  onBgColorChange: (val: string) => void; onTextColorChange: (val: string) => void;
+  onGridSizeChange: (val: WidgetGridSize) => void; onIsPinnedChange: (val: boolean) => void; onSave: () => void;
 }
 function BannerEditForm({
   widgetId, title, text, bgColor, textColor, gridSize, isPinned, maxLength,
-  onTitleChange, onTextChange, onGridSizeChange, onBgColorChange, onTextColorChange, onPinnedChange, onSave
+  onTitleChange, onTextChange, onBgColorChange, onTextColorChange, onGridSizeChange, onIsPinnedChange, onSave
 }: EditFormProps) {
   return (
     <fieldset className="edit-form-section" style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
@@ -53,14 +51,7 @@ function BannerEditForm({
       
       <div className="widget-title-row">
         <label className="label-stat" htmlFor={`bn-t-${widgetId}`}>Název bloku:</label>
-        <input
-          id={`bn-t-${widgetId}`}
-          type="text"
-          value={title}
-          onChange={(e) => onTitleChange(e.target.value)}
-          className="input-stat"
-          style={{ flex: 1 }}
-        />
+        <input id={`bn-t-${widgetId}`} type="text" value={title} onChange={(e) => onTitleChange(e.target.value)} className="input-stat" style={{ flex: 1 }} />
       </div>
 
       <div className="widget-title-row">
@@ -80,28 +71,16 @@ function BannerEditForm({
       </div>
 
       <div className="widget-title-row">
-        <label className="label-stat">Velikost v gridu:</label>
-        <select value={gridSize} onChange={(e) => onGridSizeChange(e.target.value)} className="select-grid-size" style={{ flex: 1 }}>
-          <option value="1x1">📐 Malá kostka (1x1)</option>
-          <option value="2x1">↔️ Široký banner (2x1)</option>
-          <option value="1x2">↕️ Vysoký sloupec (1x2)</option>
-          <option value="2x2">🔲 Obří blok (2x2)</option>
-        </select>
-      </div>
-
-      <div className="widget-title-row">
         <label className="label-stat" htmlFor={`bn-bg-${widgetId}`}>Pozadí:</label>
         <input id={`bn-bg-${widgetId}`} type="color" value={bgColor} onChange={(e) => onBgColorChange(e.target.value)} className="input-color" />
         <label className="label-stat" htmlFor={`bn-txc-${widgetId}`} style={{ minWidth: 'auto', marginLeft: '1rem' }}>Text:</label>
         <input id={`bn-txc-${widgetId}`} type="color" value={textColor} onChange={(e) => onTextColorChange(e.target.value)} className="input-color" />
       </div>
 
-      <label className="pinned-label">
-        <input type="checkbox" checked={isPinned} onChange={(e) => onPinnedChange(e.target.checked)} />
-        <span>📌 Připnout na hlavní přehled</span>
-      </label>
+      {/* 📐 Znovupoužitelné části pro mřížku a připnutí */}
+      <WidgetSizeSelector value={gridSize} onChange={onGridSizeChange} />
+      <WidgetPinToggle isPinned={isPinned} onChange={onIsPinnedChange} />
 
-      {/* 🚀 Sjednocené zelené tlačítko vespod */}
       <button 
         onClick={onSave} 
         className="btn-secondary"
@@ -127,16 +106,18 @@ export default function BannerWidget({ widget, isEditing, onCloseEdit, onUpdate 
   const [textInput, setTextInput] = useState(widget.data?.text || 'Tvůj velký text...');
   const [bgColorInput, setBgColorInput] = useState(widget.data?.bgColor || '#10b981');
   const [textColorInput, setTextColorInput] = useState(widget.data?.textColor || '#ffffff');
-  const [gridSizeInput, setGridSizeInput] = useState(widget.data?.gridSize || '2x1');
-  const [isPinned, setIsPinned] = useState(widget.data?.isPinnedToSummary || false);
+  
+  // 🚀 Sjednocený klientský stav pro root parametry (výchozí 2x1)
+  const [gridSizeInput, setGridSizeInput] = useState<WidgetGridSize>(widget.gridSize || '2x1');
+  const [isPinnedInput, setIsPinnedInput] = useState(widget.isPinnedToSummary || false);
 
   useEffect(() => {
     setTitleInput(widget.title);
     setTextInput(widget.data?.text || 'Tvůj velký text...');
     setBgColorInput(widget.data?.bgColor || '#10b981');
     setTextColorInput(widget.data?.textColor || '#ffffff');
-    setGridSizeInput(widget.data?.gridSize || '2x1');
-    setIsPinned(widget.data?.isPinnedToSummary || false);
+    setGridSizeInput(widget.gridSize || '2x1');
+    setIsPinnedInput(widget.isPinnedToSummary || false);
   }, [widget]);
 
   const currentMaxLength = getGridMaxLength(gridSizeInput);
@@ -149,13 +130,12 @@ export default function BannerWidget({ widget, isEditing, onCloseEdit, onUpdate 
 
   const handleSave = () => {
     if (onUpdate) {
-      onUpdate(titleInput, {
-        text: textInput,
-        bgColor: bgColorInput,
-        textColor: textColorInput,
-        gridSize: gridSizeInput,
-        isPinnedToSummary: isPinned,
-      });
+      onUpdate(
+        titleInput, 
+        { text: textInput, bgColor: bgColorInput, textColor: textColorInput },
+        gridSizeInput,
+        isPinnedInput
+      );
     }
     onCloseEdit();
   };
@@ -164,21 +144,10 @@ export default function BannerWidget({ widget, isEditing, onCloseEdit, onUpdate 
     <div className="banner-widget-container">
       {isEditing ? (
         <BannerEditForm
-          widgetId={widget.id}
-          title={titleInput}
-          text={textInput}
-          bgColor={bgColorInput}
-          textColor={textColorInput}
-          gridSize={gridSizeInput}
-          isPinned={isPinned}
-          maxLength={currentMaxLength}
-          onTitleChange={setTitleInput}
-          onTextChange={setTextInput}
-          onGridSizeChange={setGridSizeInput}
-          onBgColorChange={setBgColorInput}
-          onTextColorChange={setTextColorInput}
-          onPinnedChange={setIsPinned}
-          onSave={handleSave}
+          widgetId={widget.id} title={titleInput} text={textInput} bgColor={bgColorInput} textColor={textColorInput}
+          gridSize={gridSizeInput} isPinned={isPinnedInput} maxLength={currentMaxLength}
+          onTitleChange={setTitleInput} onTextChange={setTextInput} onBgColorChange={setBgColorInput} onTextColorChange={setTextColorInput}
+          onGridSizeChange={setGridSizeInput} onIsPinnedChange={setIsPinnedInput} onSave={handleSave}
         />
       ) : (
         <BannerDisplay text={textInput} bgColor={bgColorInput} textColor={textColorInput} />

@@ -1,14 +1,21 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { TimerWidget as TimerWidgetType } from '../../types/dashboard';
-import './timerWidget.css';
+import { TimerWidget as TimerWidgetType, WidgetGridSize } from '../../types/dashboard';
+import { WidgetSizeSelector } from '../widgetParts/size';
+import { WidgetPinToggle } from '../widgetParts/pinned';
+import './widgets.css'; // 🚀 Přesunuto pod jednotný soubor widgets.css
 
 interface TimerWidgetProps {
   widget: TimerWidgetType;
-  isEditing: boolean; // 🚀 Přijímáme z nadřazené karty
-  onCloseEdit: () => void; // 🚀 Zavření editačního režimu
-  onUpdate?: (updatedTitle: string, updatedData: TimerWidgetType['data']) => void;
+  isEditing: boolean; 
+  onCloseEdit: () => void; 
+  onUpdate?: (
+    updatedTitle: string, 
+    updatedData: TimerWidgetType['data'],
+    gridSize?: WidgetGridSize,
+    isPinned?: boolean
+  ) => void;
 }
 
 function calculateTimeLeft(targetDate: string) {
@@ -42,6 +49,10 @@ export default function TimerWidget({ widget, isEditing, onCloseEdit, onUpdate }
   const [titleInput, setTitleInput] = useState(widget.title);
   const [dateInput, setDateInput] = useState(propDate);
   const [labelInput, setLabelInput] = useState(propLabel);
+  
+  // 🚀 Zavedení klientského stavu pro root parametry (výchozí 2x2)
+  const [gridSizeInput, setGridSizeInput] = useState<WidgetGridSize>(widget.gridSize || '2x2');
+  const [isPinnedInput, setIsPinnedInput] = useState(widget.isPinnedToSummary || false);
 
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [isOver, setIsOver] = useState(false);
@@ -51,6 +62,8 @@ export default function TimerWidget({ widget, isEditing, onCloseEdit, onUpdate }
     setTitleInput(widget.title);
     setDateInput(widget.data?.targetDate || '');
     setLabelInput(widget.data?.label || '');
+    setGridSizeInput(widget.gridSize || '2x2');
+    setIsPinnedInput(widget.isPinnedToSummary || false);
   }, [widget]);
 
   useEffect(() => {
@@ -68,9 +81,15 @@ export default function TimerWidget({ widget, isEditing, onCloseEdit, onUpdate }
 
   const handleSave = () => {
     if (onUpdate) {
-      onUpdate(titleInput, { targetDate: dateInput, label: labelInput });
+      // 🚀 Ukládáme data, ale i mřížku a špendlík rovnou na root úroveň widgetu
+      onUpdate(
+        titleInput, 
+        { targetDate: dateInput, label: labelInput },
+        gridSizeInput,
+        isPinnedInput
+      );
     }
-    onCloseEdit(); // 🚀 Oznámíme kartě, že ukládání skončilo
+    onCloseEdit(); 
   };
 
   if (isEditing) {
@@ -115,7 +134,10 @@ export default function TimerWidget({ widget, isEditing, onCloseEdit, onUpdate }
           />
         </div>
 
-        {/* 🚀 Tlačítko se přesunulo natvrdo DOLŮ s tvým přesným vzhledem */}
+        {/* 📐 1. UNIFIKOVANÉ ČÁSTI: Výběr 16 rozměrů a přepínač špendlíku */}
+        <WidgetSizeSelector value={gridSizeInput} onChange={setGridSizeInput} />
+        <WidgetPinToggle isPinned={isPinnedInput} onChange={setIsPinnedInput} />
+
         <button 
           onClick={handleSave} 
           className="btn-secondary"

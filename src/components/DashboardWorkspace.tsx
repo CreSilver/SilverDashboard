@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { updateFavicon } from './others/favicon';
-import { Dashboard, DashboardWidget, WidgetType } from '../types/dashboard';
+import { Dashboard, DashboardWidget, WidgetType, WidgetGridSize } from '../types/dashboard';
 import StatWidget from './widgets/StatWidget';
 import TableWidget from './widgets/TableWidget';
 import ImageWidget from './widgets/ImageWidget';
@@ -34,79 +34,39 @@ function createWidgetDefaultData(type: WidgetType, title: string): DashboardWidg
   const id = crypto.randomUUID();
   switch (type) {
     case 'embed':
-      return { id, type: 'embed', title, data: { url: '', gridSize: '2x2' } };
+      return { id, type: 'embed', title, gridSize: '2x2', isPinnedToSummary: false, data: { url: '' } };
     case 'table':
-      return { id, type: 'table', title, data: { headers: ['Sloupec 1', 'Sloupec 2'], rows: [['Data 1', 'Data 2']] } };
+      return { id, type: 'table', title, gridSize: '2x2', isPinnedToSummary: false, data: { headers: ['Sloupec 1', 'Sloupec 2'], rows: [['Data 1', 'Data 2']] } };
     case 'image':
-      return { id, type: 'image', title, data: { imageUrl: '', caption: '', width: 0, height: 0 } };
+      return { id, type: 'image', title, gridSize: '2x2', isPinnedToSummary: false, data: { imageUrl: '' } };
     case 'text':
-      // 🚀 ZMĚNA: Nové textové pole má při vytvoření přednastavenou velikost '2x1'
-      return { id, type: 'text', title, data: { text: '', gridSize: '2x1' } };
+      return { id, type: 'text', title, gridSize: '2x1', isPinnedToSummary: false, data: { text: '' } };
     case 'timer':
-      return { id, type: 'timer', title, data: { targetDate: '', label: '' } };
+      return { id, type: 'timer', title, gridSize: '2x2', isPinnedToSummary: false, data: { targetDate: '' } };
     case 'progress':
-      return { id, type: 'progress', title, data: { currentValue: 0, targetValue: 100, unit: '', isPinnedToSummary: false } };
+      return { id, type: 'progress', title, gridSize: '2x2', isPinnedToSummary: false, data: { currentValue: 0, targetValue: 100 } };
     case 'banner':
-      return { id, type: 'banner', title, data: { text: 'Dnešní hlavní focus!', bgColor: '#10b981', textColor: '#ffffff', gridSize: '2x1', isPinnedToSummary: false } };
+      return { id, type: 'banner', title, gridSize: '2x1', isPinnedToSummary: false, data: { text: 'Dnešní hlavní focus!', bgColor: '#10b981', textColor: '#ffffff' } };
     case 'links':
-      return { id, type: 'links', title, data: { items: [], isPinnedToSummary: false } };
+      return { id, type: 'links', title, gridSize: '2x2', isPinnedToSummary: false, data: { items: [] } };
     case 'counter': 
-      return { id, type: 'counter', title, data: { currentValue: 0, step: 1, resetValue: 0 } };
+      return { id, type: 'counter', title, gridSize: '1x1', isPinnedToSummary: false, data: { currentValue: 0, step: 1, resetValue: 0 } };
     case 'countup':
-      return { id, type: 'countup', title, data: { startDate: '', label: '' } };
+      return { id, type: 'countup', title, gridSize: '2x1', isPinnedToSummary: false, data: { startDate: '' } };
     default:
-      return { id, type: 'stat', title, data: { chartType: 'bar', items: [], isPinnedToSummary: false } };
+      return { id, type: 'stat', title, gridSize: '2x2', isPinnedToSummary: false, data: { chartType: 'bar', items: [] } };
   }
 }
 
 function getWidgetGridClass(widget: DashboardWidget): string {
-  // 🚀 NOVINKA: Dynamická mřížka pro Textové bloky (Note widgets)
-  if (widget.type === 'text' && widget.data) {
-    const size = widget.data.gridSize || '2x1'; // Fallback pro staré datové sady
-    if (size === '2x1') return 'span-h-2';
-    if (size === '1x2') return 'span-v-2';
-    if (size === '2x2') return 'span-4';
-    if (size === '3x2') return 'span-h-3 span-v-2';
-    if (size === '4x2') return 'span-h-4 span-v-2';
-    return ''; // Výchozí 1x1
-  }
-
-  if (widget.type === 'embed' && widget.data) {
-    const size = widget.data.gridSize;
-    if (size === '2x1') return 'span-h-2';
-    if (size === '1x2') return 'span-v-2';
-    if (size === '2x2') return 'span-4'; 
-    if (size === '3x2') return 'span-h-3 span-v-2'; 
-    if (size === '4x2') return 'span-h-4 span-v-2'; 
-    return '';
-  }
-
-  if (widget.type === 'table' && widget.data) {
-    const colCount = widget.data.headers?.length || 0;
-    if (colCount > 5) return 'span-h-3';
-    if (colCount > 2) return 'span-h-2';
-  }
-  if (widget.type === 'stat' && widget.data) {
-    const itemsCount = widget.data.items?.length || 0;
-    if (itemsCount > 4) return 'span-h-2';
-  }
-  if (widget.type === 'timer' || widget.type === 'countup') return 'span-h-2';
-
-  if (widget.type === 'image' && widget.data) {
-    const { width: w = 0, height: h = 0 } = widget.data;
-    if (w > 0 && h > 0) {
-      if (w >= 1000 && h >= 1000) return 'span-4';
-      if (w > h * 1.3) return 'span-h-2';
-      if (h > w * 1.3) return 'span-v-2';
-    }
-  }
-  if (widget.type === 'banner' && widget.data) {
-    const size = widget.data.gridSize;
-    if (size === '2x1') return 'span-h-2';
-    if (size === '1x2') return 'span-v-2';
-    if (size === '2x2') return 'span-4';
-  }
-  return '';
+  // 🚀 OPRAVA ČTENÍ ROZMĚRU: Bereme velikost z rootu, ne z data!
+  // Nastavíme bezpečné výchozí fallbacky podle typu, pokud starší JSON data rozměr nemají
+  const defaultSize = widget.type === 'text' ? '2x1' : (widget.type === 'counter' ? '1x1' : '2x2');
+  const size = widget.gridSize || defaultSize;
+  
+  // Rozložíme např. '3x4' na šířku 3 a výšku 4 a složíme unifikované třídy pro CSS grid
+  const [w, h] = size.split('x');
+  return `w-span-${w} h-span-${h}`;
 }
 
 const WIDGET_COMPONENTS: Record<string, React.ComponentType<any>> = {
@@ -172,16 +132,33 @@ function useDashboardState(initialData: Dashboard) {
       ...widgetToClone,
       id: crypto.randomUUID(),
       title: widgetToClone.title ? `${widgetToClone.title} (Kopie)` : "Kopie prvku",
-      data: widgetToClone.data ? JSON.parse(JSON.stringify(widgetToClone.data)) : undefined
+      data: widgetToClone.data ? JSON.parse(JSON.stringify(widgetToClone.data)) : undefined,
+      gridSize: widgetToClone.gridSize,
+      isPinnedToSummary: widgetToClone.isPinnedToSummary
     };
     handleSaveData({ widgets: [...dashboard.widgets, clonedWidget] });
     setActiveMenuId(null);
   };
 
-  const handleWidgetUpdate = (widgetId: string, nextTitle: string, nextData: any) => {
+  // 🚀 OPRAVA UKLÁDÁNÍ: Přidány argumenty nextGridSize a nextIsPinned a zápis na root úroveň objektu!
+  const handleWidgetUpdate = (
+    widgetId: string, 
+    nextTitle: string, 
+    nextData: any, 
+    nextGridSize?: WidgetGridSize, 
+    nextIsPinned?: boolean
+  ) => {
     handleSaveData({
       widgets: dashboard.widgets.map((w) =>
-        w.id === widgetId ? ({ ...w, title: nextTitle, data: nextData } as DashboardWidget) : w
+        w.id === widgetId 
+          ? ({ 
+              ...w, 
+              title: nextTitle, 
+              data: nextData,
+              gridSize: nextGridSize,
+              isPinnedToSummary: nextIsPinned
+            } as DashboardWidget) 
+          : w
       )
     });
   };
@@ -249,7 +226,7 @@ function WorkspaceHeader({ title, isEditingTitle, titleInput, loading, isDropdow
 
 interface CardProps {
   widget: DashboardWidget; index: number; totalWidgets: number; loading: boolean; activeMenuId: string | null;
-  onMove: (index: number, direction: 'left' | 'right') => void; onDelete: (id: string, title: string) => void; onClone: (id: string) => void; onToggleMenu: (id: string | null) => void; onUpdate: (id: string, nextTitle: string, nextData: any) => void;
+  onMove: (index: number, direction: 'left' | 'right') => void; onDelete: (id: string, title: string) => void; onClone: (id: string) => void; onToggleMenu: (id: string | null) => void; onUpdate: (id: string, nextTitle: string, nextData: any, gridSize?: WidgetGridSize, isPinned?: boolean) => void;
 }
 function WidgetCard({ widget, index, totalWidgets, loading, activeMenuId, onMove, onDelete, onClone, onToggleMenu, onUpdate }: CardProps) {
   const WidgetComponent = WIDGET_COMPONENTS[widget.type];
@@ -276,7 +253,17 @@ function WidgetCard({ widget, index, totalWidgets, loading, activeMenuId, onMove
         </div>
         <span style={{ fontSize: '0.8rem', color: '#666' }}>{widget.type}</span>
       </header>
-      {WidgetComponent && <WidgetComponent widget={widget} isEditing={isEditing} onCloseEdit={() => setIsEditing(false)} onUpdate={(nextTitle: string, nextData: any) => onUpdate(widget.id, nextTitle, nextData)} />}
+      {/* 🚀 PROPOJENÍ UPDATE METODY: WidgetComponent předává 4 argumenty, které posíláme dál do useDashboardState */}
+      {WidgetComponent && (
+        <WidgetComponent 
+          widget={widget} 
+          isEditing={isEditing} 
+          onCloseEdit={() => setIsEditing(false)} 
+          onUpdate={(nextTitle: string, nextData: any, nextGridSize?: WidgetGridSize, nextIsPinned?: boolean) => 
+            onUpdate(widget.id, nextTitle, nextData, nextGridSize, nextIsPinned)
+          } 
+        />
+      )}
     </article>
   );
 }

@@ -1,14 +1,21 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { StatWidget as StatWidgetType, ChartItem } from '../../types/dashboard';
-import './statWidget.css';
+import { StatWidget as StatWidgetType, ChartItem, WidgetGridSize } from '../../types/dashboard';
+import { WidgetSizeSelector } from '../widgetParts/size';
+import { WidgetPinToggle } from '../widgetParts/pinned';
+import './widgets.css'; // 🚀 Přesměrováno na jednotný styl
 
 interface StatWidgetProps {
   widget: StatWidgetType;
-  isEditing: boolean; // 🚀 Řízeno externě z karty
+  isEditing: boolean; 
   onCloseEdit: () => void;
-  onUpdate: (updatedTitle: string, updatedData: StatWidgetType['data']) => void;
+  onUpdate: (
+    updatedTitle: string, 
+    updatedData: StatWidgetType['data'],
+    gridSize?: WidgetGridSize,
+    isPinned?: boolean
+  ) => void;
 }
 
 function calculateChartMetrics(items: ChartItem[]) {
@@ -29,13 +36,15 @@ function computePieChartStyle(items: ChartItem[], totalValue: number) {
 }
 
 interface EditFormProps {
-  widgetId: string; title: string; items: ChartItem[]; chartType: 'bar' | 'pie'; isPinned: boolean;
+  widgetId: string; title: string; items: ChartItem[]; chartType: 'bar' | 'pie'; 
+  gridSize: WidgetGridSize; isPinned: boolean;
   onTitleChange: (val: string) => void; onItemChange: (id: string, key: keyof ChartItem, val: string | number) => void;
-  onRemoveItem: (id: string) => void; onAddItem: () => void; onChartTypeChange: (type: 'bar' | 'pie') => void; onPinnedChange: (val: boolean) => void; onSave: () => void;
+  onRemoveItem: (id: string) => void; onAddItem: () => void; onChartTypeChange: (type: 'bar' | 'pie') => void; 
+  onGridSizeChange: (val: WidgetGridSize) => void; onIsPinnedChange: (val: boolean) => void; onSave: () => void;
 }
 function StatEditForm({
-  widgetId, title, items, chartType, isPinned,
-  onTitleChange, onItemChange, onRemoveItem, onAddItem, onChartTypeChange, onPinnedChange, onSave
+  widgetId, title, items, chartType, gridSize, isPinned,
+  onTitleChange, onItemChange, onRemoveItem, onAddItem, onChartTypeChange, onGridSizeChange, onIsPinnedChange, onSave
 }: EditFormProps) {
   return (
     <fieldset className="edit-form-section" style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
@@ -58,18 +67,15 @@ function StatEditForm({
 
       <button onClick={onAddItem} className="btn-secondary" style={{ width: '100%', padding: '0.4rem' }}>➕ Přidat hodnotu</button>
 
-      {/* 🚀 Volba typu grafu přesunuta přirozeně sem jako nastavení */}
       <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.25rem' }}>
         <button type="button" onClick={() => onChartTypeChange('bar')} className="btn-secondary" style={{ flex: 1, borderColor: chartType === 'bar' ? '#34d399' : '', color: chartType === 'bar' ? '#34d399' : '' }}>📊 Sloupcový</button>
         <button type="button" onClick={() => onChartTypeChange('pie')} className="btn-secondary" style={{ flex: 1, borderColor: chartType === 'pie' ? '#34d399' : '', color: chartType === 'pie' ? '#34d399' : '' }}>🍕 Koláčový</button>
       </div>
 
-      <label className="pinned-label">
-        <input type="checkbox" checked={isPinned} onChange={(e) => onPinnedChange(e.target.checked)} />
-        <span>📌 Připnout na hlavní přehled</span>
-      </label>
+      {/* 📐 Sdílené prvky pro mřížku a připínání */}
+      <WidgetSizeSelector value={gridSize} onChange={onGridSizeChange} />
+      <WidgetPinToggle isPinned={isPinned} onChange={onIsPinnedChange} />
 
-      {/* 🚀 Sjednocené zelené tlačítko vespod */}
       <button 
         onClick={onSave} 
         className="btn-secondary"
@@ -85,19 +91,23 @@ export default function StatWidget({ widget, isEditing, onCloseEdit, onUpdate }:
   const [titleInput, setTitleInput] = useState(widget.title);
   const [chartType, setChartType] = useState(widget.data?.chartType || 'bar');
   const [items, setItems] = useState<ChartItem[]>(widget.data?.items || []);
-  const [isPinned, setIsPinned] = useState(widget.data?.isPinnedToSummary || false);
+  
+  // 🚀 Sjednocený klientský stav pro parametry z rootu (výchozí 2x2)
+  const [gridSizeInput, setGridSizeInput] = useState<WidgetGridSize>(widget.gridSize || '2x2');
+  const [isPinnedInput, setIsPinnedInput] = useState(widget.isPinnedToSummary || false);
 
   useEffect(() => {
     setTitleInput(widget.title);
     setChartType(widget.data?.chartType || 'bar');
     setItems(widget.data?.items || []);
-    setIsPinned(widget.data?.isPinnedToSummary || false);
+    setGridSizeInput(widget.gridSize || '2x2');
+    setIsPinnedInput(widget.isPinnedToSummary || false);
   }, [widget]);
 
   const { total: totalValue, max: maxValue } = calculateChartMetrics(items);
 
   const handleSave = () => {
-    onUpdate(titleInput, { chartType, items, isPinnedToSummary: isPinned });
+    onUpdate(titleInput, { chartType, items }, gridSizeInput, isPinnedInput);
     onCloseEdit();
   };
 
@@ -108,9 +118,10 @@ export default function StatWidget({ widget, isEditing, onCloseEdit, onUpdate }:
   if (isEditing) {
     return (
       <StatEditForm
-        widgetId={widget.id} title={titleInput} items={items} chartType={chartType} isPinned={isPinned}
+        widgetId={widget.id} title={titleInput} items={items} chartType={chartType} gridSize={gridSizeInput} isPinned={isPinnedInput}
         onTitleChange={setTitleInput} onItemChange={(id, key, val) => setItems(items.map(it => it.id === id ? { ...it, [key]: val } : it))}
-        onRemoveItem={(id) => setItems(items.filter(it => it.id !== id))} onAddItem={handleAddItem} onChartTypeChange={setChartType} onPinnedChange={setIsPinned} onSave={handleSave}
+        onRemoveItem={(id) => setItems(items.filter(it => it.id !== id))} onAddItem={handleAddItem} onChartTypeChange={setChartType} 
+        onGridSizeChange={setGridSizeInput} onIsPinnedChange={setIsPinnedInput} onSave={handleSave}
       />
     );
   }

@@ -1,32 +1,78 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { EmbedWidget as EmbedWidgetType } from '../../types/dashboard';
+import { CountUpWidget as CountUpWidgetType, WidgetGridSize } from '../../types/dashboard';
+import { WidgetSizeSelector } from '../widgetParts/size';
+import { WidgetPinToggle } from '../widgetParts/pinned';
+import './widgets.css'; // 🚀 Přesměrováno na jednotný styl
 
-interface EmbedWidgetProps {
-  widget: EmbedWidgetType;
+interface CountUpWidgetProps {
+  widget: CountUpWidgetType;
   isEditing: boolean;
   onCloseEdit: () => void;
-  onUpdate?: (updatedTitle: string, updatedData: EmbedWidgetType['data']) => void;
+  onUpdate?: (
+    updatedTitle: string, 
+    updatedData: CountUpWidgetType['data'],
+    gridSize?: WidgetGridSize,
+    isPinned?: boolean
+  ) => void;
 }
 
-export default function EmbedWidget({ widget, isEditing, onCloseEdit, onUpdate }: EmbedWidgetProps) {
-  const propUrl = widget.data?.url || '';
-  const propGridSize = widget.data?.gridSize || '2x2';
+function calculateTimePassed(startDate: string) {
+  if (!startDate) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  const difference = +new Date() - +new Date(startDate);
+  if (difference <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  
+  return {
+    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((difference / 1000 / 60) % 60),
+    seconds: Math.floor((difference / 1000) % 60)
+  };
+}
+
+function formatNum(num: number): string {
+  return String(num).padStart(2, '0');
+}
+
+export default function CountUpWidget({ widget, isEditing, onCloseEdit, onUpdate }: CountUpWidgetProps) {
+  const propDate = widget.data?.startDate || '';
+  const propLabel = widget.data?.label || '';
 
   const [titleInput, setTitleInput] = useState(widget.title);
-  const [urlInput, setUrlInput] = useState(propUrl);
-  const [gridSizeInput, setGridSizeInput] = useState(propGridSize);
+  const [dateInput, setDateInput] = useState(propDate);
+  const [labelInput, setLabelInput] = useState(propLabel);
+  
+  // 🚀 Sjednocený klientský stav pro root parametry (výchozí 2x1)
+  const [gridSizeInput, setGridSizeInput] = useState<WidgetGridSize>(widget.gridSize || '2x1');
+  const [isPinnedInput, setIsPinnedInput] = useState(widget.isPinnedToSummary || false);
+
+  const [timePassed, setTimePassed] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
     setTitleInput(widget.title);
-    setUrlInput(widget.data?.url || '');
-    setGridSizeInput(widget.data?.gridSize || '2x2');
+    setDateInput(widget.data?.startDate || '');
+    setLabelInput(widget.data?.label || '');
+    setGridSizeInput(widget.gridSize || '2x1');
+    setIsPinnedInput(widget.isPinnedToSummary || false);
   }, [widget]);
+
+  useEffect(() => {
+    if (!propDate) return;
+    const tick = () => setTimePassed(calculateTimePassed(propDate));
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [propDate]);
 
   const handleSave = () => {
     if (onUpdate) {
-      onUpdate(titleInput, { url: urlInput, gridSize: gridSizeInput });
+      onUpdate(
+        titleInput, 
+        { startDate: dateInput, label: labelInput }, 
+        gridSizeInput, 
+        isPinnedInput
+      );
     }
     onCloseEdit();
   };
@@ -34,116 +80,47 @@ export default function EmbedWidget({ widget, isEditing, onCloseEdit, onUpdate }
   if (isEditing) {
     return (
       <fieldset className="edit-form-section" style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-        <legend style={{ display: 'none' }}>Nastavení Vloženého webu</legend>
+        <legend style={{ display: 'none' }}>Nastavení milníku</legend>
         <div className="widget-title-row">
-          <label className="label-stat" htmlFor={`embed-t-${widget.id}`}>Název prvku:</label>
-          <input id={`embed-t-${widget.id}`} type="text" value={titleInput} onChange={(e) => setTitleInput(e.target.value)} className="input-stat" style={{ flex: 1 }} />
+          <label className="label-stat" htmlFor={`cup-t-${widget.id}`}>Název milníku:</label>
+          <input id={`cup-t-${widget.id}`} type="text" value={titleInput} onChange={(e) => setTitleInput(e.target.value)} className="input-stat" style={{ flex: 1 }} />
         </div>
-        
         <div className="widget-title-row">
-          <label className="label-stat" htmlFor={`embed-u-${widget.id}`}>Adresa webu (URL):</label>
-          <input 
-            id={`embed-u-${widget.id}`} 
-            type="text" 
-            value={urlInput} 
-            onChange={(e) => setUrlInput(e.target.value)} 
-            className="input-stat" 
-            style={{ flex: 1 }} 
-            placeholder="https://docs.google.com/spreadsheets/.../preview" 
-          />
+          <label className="label-stat" htmlFor={`cup-d-${widget.id}`}>Počáteční datum:</label>
+          <input id={`cup-d-${widget.id}`} type="datetime-local" value={dateInput} onChange={(e) => setDateInput(e.target.value)} className="input-datetime" style={{ flex: 1 }} />
+        </div>
+        <div className="widget-title-row">
+          <label className="label-stat" htmlFor={`cup-l-${widget.id}`}>Mini podtext:</label>
+          <input id={`cup-l-${widget.id}`} type="text" value={labelInput} onChange={(e) => setLabelInput(e.target.value)} className="input-stat" style={{ flex: 1 }} placeholder="Např. Od spuštění produkce..." />
         </div>
 
-        <div className="widget-title-row">
-          <label className="label-stat" htmlFor={`embed-g-${widget.id}`}>Rozměry na ploše:</label>
-          <select 
-            id={`embed-g-${widget.id}`} 
-            value={gridSizeInput} 
-            onChange={(e) => setGridSizeInput(e.target.value as any)} 
-            className="input-stat" 
-            style={{ 
-              flex: 1, 
-              background: '#1a1a1a', 
-              color: '#dbdee1', 
-              border: '1px solid rgba(255,255,255,0.08)', 
-              borderRadius: '6px', 
-              padding: '0.4rem',
-              cursor: 'pointer'
-            }}
-          >
-            <option value="1x1">Malý čtverec (1x1)</option>
-            <option value="2x1">Široká nudle (2x1)</option>
-            <option value="1x2">Vysoký sloupec (1x2)</option>
-            <option value="2x2">Standardní kostka (2x2)</option>
-            <option value="3x2">Velký přehled (3x2)</option>
-            <option value="4x2">Královská velikost (4x2)</option>
-          </select>
-        </div>
+        {/* 📐 Sdílené prvky pro mřížku a připínání */}
+        <WidgetSizeSelector value={gridSizeInput} onChange={setGridSizeInput} />
+        <WidgetPinToggle isPinned={isPinnedInput} onChange={setIsPinnedInput} />
 
         <button onClick={handleSave} className="btn-secondary" style={{ backgroundColor: '#34d399', color: '#161a22', borderColor: '#34d399', fontWeight: 'bold', width: '100%', marginTop: '0.5rem', padding: '0.65rem', borderRadius: '8px', cursor: 'pointer' }}>
-          💾 Uložit a změnit velikost
+          💾 Uložit pokrok
         </button>
       </fieldset>
     );
   }
 
-  if (!propUrl) {
-    return (
-      <div style={{ color: '#64748b', fontSize: '0.9rem', textAlign: 'center', padding: '2rem', margin: 0 }}>
-        <p style={{ fontWeight: 'bold' }}>Není nastavena URL adresa webu.</p>
-        <span style={{ fontSize: '0.75rem', color: '#475569' }}>Klikni nahoře na ozubené kolečko a vlož odkaz.</span>
-      </div>
-    );
+  if (!propDate) {
+    return <p style={{ color: '#64748b', fontSize: '0.9rem', textAlign: 'center', padding: '2rem', margin: 0 }}>Není nastaveno datum. Klikni na ozubené kolečko.</p>;
   }
 
   return (
-    <div className="embed-widget-wrapper" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      
-      {/* 🚀 NOVINKA: Elegantní skleněná lišta s rychlým odkazem ven */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'flex-end', 
-        marginBottom: '0.5rem',
-        flexShrink: 0 
-      }}>
-        <a 
-          href={propUrl} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          style={{ 
-            fontSize: '0.72rem', 
-            color: '#34d399', 
-            textDecoration: 'none', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '0.3rem',
-            background: 'rgba(52, 211, 153, 0.08)',
-            padding: '0.25rem 0.6rem',
-            borderRadius: '5px',
-            border: '1px solid rgba(52, 211, 153, 0.15)',
-            transition: 'all 0.2s',
-            fontWeight: 500
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'rgba(52, 211, 153, 0.15)';
-            e.currentTarget.style.borderColor = 'rgba(52, 211, 153, 0.3)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'rgba(52, 211, 153, 0.08)';
-            e.currentTarget.style.borderColor = 'rgba(52, 211, 153, 0.15)';
-          }}
-        >
-          🌐 Otevřít na plné obrazovce ↗
-        </a>
-      </div>
-
-      <div className="embed-iframe-container" style={{ flex: 1, height: '100%' }}>
-        <iframe 
-          src={propUrl} 
-          title={widget.title}
-          className="embed-iframe"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-        />
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center' }}>
+      <article className="countdown-display">
+        <div className="time-segment"><span className="time-number">{formatNum(timePassed.days)}</span><span className="time-label">Dny</span></div>
+        <div className="time-separator">:</div>
+        <div className="time-segment"><span className="time-number">{formatNum(timePassed.hours)}</span><span className="time-label">Hod</span></div>
+        <div className="time-separator">:</div>
+        <div className="time-segment"><span className="time-number">{formatNum(timePassed.minutes)}</span><span className="time-label">Min</span></div>
+        <div className="time-separator">:</div>
+        <div className="time-segment"><span className="time-number">{formatNum(timePassed.seconds)}</span><span className="time-label">Sec</span></div>
+      </article>
+      {propLabel && <footer style={{ textAlign: 'center', fontSize: '0.85rem', color: '#64748b', fontStyle: 'italic', marginTop: 'auto' }}>{propLabel}</footer>}
     </div>
   );
 }

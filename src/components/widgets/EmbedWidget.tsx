@@ -1,32 +1,43 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { EmbedWidget as EmbedWidgetType } from '../../types/dashboard';
+import { EmbedWidget as EmbedWidgetType, WidgetGridSize } from '../../types/dashboard';
+import { WidgetSizeSelector } from '../widgetParts/size';
+import { WidgetPinToggle } from '../widgetParts/pinned';
+import './widgets.css'; // 🚀 Přesměrováno na jednotný styl
 
 interface EmbedWidgetProps {
   widget: EmbedWidgetType;
   isEditing: boolean;
   onCloseEdit: () => void;
-  onUpdate?: (updatedTitle: string, updatedData: EmbedWidgetType['data']) => void;
+  onUpdate?: (
+    updatedTitle: string, 
+    updatedData: EmbedWidgetType['data'],
+    gridSize?: WidgetGridSize,
+    isPinned?: boolean
+  ) => void;
 }
 
 export default function EmbedWidget({ widget, isEditing, onCloseEdit, onUpdate }: EmbedWidgetProps) {
   const propUrl = widget.data?.url || '';
-  const propGridSize = widget.data?.gridSize || '2x2';
 
   const [titleInput, setTitleInput] = useState(widget.title);
   const [urlInput, setUrlInput] = useState(propUrl);
-  const [gridSizeInput, setGridSizeInput] = useState(propGridSize);
+  
+  // 🚀 Sjednocený klientský stav pro parametry z rootu (výchozí 2x2)
+  const [gridSizeInput, setGridSizeInput] = useState<WidgetGridSize>(widget.gridSize || '2x2');
+  const [isPinnedInput, setIsPinnedInput] = useState(widget.isPinnedToSummary || false);
 
   useEffect(() => {
     setTitleInput(widget.title);
     setUrlInput(widget.data?.url || '');
-    setGridSizeInput(widget.data?.gridSize || '2x2');
+    setGridSizeInput(widget.gridSize || '2x2');
+    setIsPinnedInput(widget.isPinnedToSummary || false);
   }, [widget]);
 
   const handleSave = () => {
     if (onUpdate) {
-      onUpdate(titleInput, { url: urlInput, gridSize: gridSizeInput });
+      onUpdate(titleInput, { url: urlInput }, gridSizeInput, isPinnedInput);
     }
     onCloseEdit();
   };
@@ -53,32 +64,9 @@ export default function EmbedWidget({ widget, isEditing, onCloseEdit, onUpdate }
           />
         </div>
 
-        {/* 🚀 FORMULÁŘOVÁ VOLBA VELIKOSTI PRVKU */}
-        <div className="widget-title-row">
-          <label className="label-stat" htmlFor={`embed-g-${widget.id}`}>Rozměry na ploše:</label>
-          <select 
-            id={`embed-g-${widget.id}`} 
-            value={gridSizeInput} 
-            onChange={(e) => setGridSizeInput(e.target.value as any)} 
-            className="input-stat" 
-            style={{ 
-              flex: 1, 
-              background: '#1a1a1a', 
-              color: '#dbdee1', 
-              border: '1px solid rgba(255,255,255,0.08)', 
-              borderRadius: '6px', 
-              padding: '0.4rem',
-              cursor: 'pointer'
-            }}
-          >
-            <option value="1x1">Malý čtverec (1x1)</option>
-            <option value="2x1">Široká nudle (2x1)</option>
-            <option value="1x2">Vysoký sloupec (1x2)</option>
-            <option value="2x2">Standardní kostka (2x2)</option>
-            <option value="3x2">Velký přehled (3x2)</option>
-            <option value="4x2">Královská velikost (4x2)</option>
-          </select>
-        </div>
+        {/* 📐 Sdílené prvky pro mřížku a připínání */}
+        <WidgetSizeSelector value={gridSizeInput} onChange={setGridSizeInput} />
+        <WidgetPinToggle isPinned={isPinnedInput} onChange={setIsPinnedInput} />
 
         <button onClick={handleSave} className="btn-secondary" style={{ backgroundColor: '#34d399', color: '#161a22', borderColor: '#34d399', fontWeight: 'bold', width: '100%', marginTop: '0.5rem', padding: '0.65rem', borderRadius: '8px', cursor: 'pointer' }}>
           💾 Uložit a změnit velikost
@@ -87,25 +75,64 @@ export default function EmbedWidget({ widget, isEditing, onCloseEdit, onUpdate }
     );
   }
 
-  // Výchozí stav, pokud ještě nezadali adresu
   if (!propUrl) {
     return (
       <div style={{ color: '#64748b', fontSize: '0.9rem', textAlign: 'center', padding: '2rem', margin: 0 }}>
         <p style={{ fontWeight: 'bold' }}>Není nastavena URL adresa webu.</p>
-        <span style={{ fontSize: '0.75rem', color: '#475569' }}>Klikni nahoře na ozubené kolečko a vlož odkaz (např. Google Sheets, Google kalendář, atd.).</span>
+        <span style={{ fontSize: '0.75rem', color: '#475569' }}>Klikni nahoře na ozubené kolečko a vlož odkaz.</span>
       </div>
     );
   }
 
   return (
-    <div style={{ width: '100%', height: '100%', minHeight: '300px', borderRadius: '6px', overflow: 'hidden', background: '#0c0d12', border: '1px solid rgba(255,255,255,0.02)' }}>
-      <iframe 
-        src={propUrl} 
-        title={widget.title}
-        style={{ width: '100%', height: '100%', minHeight: '300px', border: 'none' }}
-        // Sandbox zabrání tomu, aby vložený web mohl nějak rozbít nebo přesměrovat náš dashboard
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-      />
+    <div className="embed-widget-wrapper" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      
+      {/* Skleněná lišta s nouzovým odkazem ven z iframu */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'flex-end', 
+        marginBottom: '0.5rem',
+        flexShrink: 0 
+      }}>
+        <a 
+          href={propUrl} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          style={{ 
+            fontSize: '0.72rem', 
+            color: '#34d399', 
+            textDecoration: 'none', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '0.3rem',
+            background: 'rgba(52, 211, 153, 0.08)',
+            padding: '0.25rem 0.6rem',
+            borderRadius: '5px',
+            border: '1px solid rgba(52, 211, 153, 0.15)',
+            transition: 'all 0.2s',
+            fontWeight: 500
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(52, 211, 153, 0.15)';
+            e.currentTarget.style.borderColor = 'rgba(52, 211, 153, 0.3)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(52, 211, 153, 0.08)';
+            e.currentTarget.style.borderColor = 'rgba(52, 211, 153, 0.15)';
+          }}
+        >
+          🌐 Otevřít na plné obrazovce ↗
+        </a>
+      </div>
+
+      <div className="embed-iframe-container" style={{ flex: 1, height: '100%' }}>
+        <iframe 
+          src={propUrl} 
+          title={widget.title}
+          className="embed-iframe"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        />
+      </div>
     </div>
   );
 }

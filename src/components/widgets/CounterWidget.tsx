@@ -1,54 +1,65 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import './counterWidget.css';
+import { CounterWidget as CounterWidgetType, WidgetGridSize } from '../../types/dashboard';
+import { WidgetSizeSelector } from '../widgetParts/size';
+import { WidgetPinToggle } from '../widgetParts/pinned';
+import './widgets.css'; // 🚀 Přesměrováno na jednotný styl
 
 interface CounterWidgetProps {
-  widget: {
-    id: string;
-    title: string;
-    type: string;
-    data?: {
-      currentValue?: number;
-      step?: number;
-    };
-  };
-  isEditing: boolean; // 🚀 Přijímáme z nadřazené karty
-  onCloseEdit: () => void; // 🚀 Callback pro zavření
-  onUpdate: (updatedTitle: string, updatedData: any) => void;
+  widget: CounterWidgetType;
+  isEditing: boolean; 
+  onCloseEdit: () => void; 
+  onUpdate: (
+    updatedTitle: string, 
+    updatedData: CounterWidgetType['data'],
+    gridSize?: WidgetGridSize,
+    isPinned?: boolean
+  ) => void;
 }
 
 export default function CounterWidget({ widget, isEditing, onCloseEdit, onUpdate }: CounterWidgetProps) {
   const currentValue = widget.data?.currentValue ?? 0;
   const propStep = widget.data?.step ?? 1;
+  const propResetValue = widget.data?.resetValue ?? 0;
 
   const [titleInput, setTitleInput] = useState(widget.title);
   const [stepInput, setStepInput] = useState(String(propStep));
+  const [resetValueInput, setResetValueInput] = useState(String(propResetValue));
+  
+  // 🚀 Sjednocený klientský stav pro root parametry (výchozí 1x1)
+  const [gridSizeInput, setGridSizeInput] = useState<WidgetGridSize>(widget.gridSize || '1x1');
+  const [isPinnedInput, setIsPinnedInput] = useState(widget.isPinnedToSummary || false);
 
   useEffect(() => {
     setTitleInput(widget.title);
     setStepInput(String(widget.data?.step ?? 1));
+    setResetValueInput(String(widget.data?.resetValue ?? 0));
+    setGridSizeInput(widget.gridSize || '1x1');
+    setIsPinnedInput(widget.isPinnedToSummary || false);
   }, [widget]);
 
   const handleIncrement = () => {
     const step = Number(stepInput) || 1;
-    onUpdate(widget.title, { ...widget.data, currentValue: currentValue + step });
+    onUpdate(widget.title, { ...widget.data, currentValue: currentValue + step }, gridSizeInput, isPinnedInput);
   };
 
   const handleDecrement = () => {
     const step = Number(stepInput) || 1;
-    onUpdate(widget.title, { ...widget.data, currentValue: currentValue - step });
+    onUpdate(widget.title, { ...widget.data, currentValue: currentValue - step }, gridSizeInput, isPinnedInput);
   };
 
   const handleReset = () => {
-    onUpdate(widget.title, { ...widget.data, currentValue: 0 });
+    const rVal = Number(resetValueInput) || 0;
+    onUpdate(widget.title, { ...widget.data, currentValue: rVal }, gridSizeInput, isPinnedInput);
     onCloseEdit();
   };
 
   const handleSave = () => {
     const step = Math.max(Number(stepInput) || 1, 1);
-    onUpdate(titleInput, { currentValue: widget.data?.currentValue ?? 0, step });
-    onCloseEdit(); // 🚀 Zavře formulář
+    const rVal = Number(resetValueInput) || 0;
+    onUpdate(titleInput, { currentValue, step, resetValue: rVal }, gridSizeInput, isPinnedInput);
+    onCloseEdit(); 
   };
 
   if (isEditing) {
@@ -58,33 +69,26 @@ export default function CounterWidget({ widget, isEditing, onCloseEdit, onUpdate
         
         <div className="widget-title-row">
           <label className="label-stat" htmlFor={`cnt-t-${widget.id}`}>Název bloku:</label>
-          <input
-            id={`cnt-t-${widget.id}`}
-            type="text"
-            value={titleInput}
-            onChange={(e) => setTitleInput(e.target.value)}
-            className="input-stat"
-            style={{ flex: 1 }}
-          />
+          <input id={`cnt-t-${widget.id}`} type="text" value={titleInput} onChange={(e) => setTitleInput(e.target.value)} className="input-stat" style={{ flex: 1 }} />
         </div>
 
         <div className="widget-title-row">
-          <label className="label-stat" htmlFor={`cnt-s-${widget.id}`}>Krok (přičítat po):</label>
-          <input
-            id={`cnt-s-${widget.id}`}
-            type="number"
-            value={stepInput}
-            onChange={(e) => setStepInput(e.target.value)}
-            className="input-stat"
-            style={{ flex: 1 }}
-            min="1"
-          />
+          <label className="label-stat" htmlFor={`cnt-s-${widget.id}`}>Krok (+/- o):</label>
+          <input id={`cnt-s-${widget.id}`} type="number" value={stepInput} onChange={(e) => setStepInput(e.target.value)} className="input-stat" style={{ flex: 1 }} min="1" />
         </div>
 
-        {/* 🚀 Obě akce se nacházejí vespod vedle sebe, uložení s tvým jasným designem */}
+        <div className="widget-title-row">
+          <label className="label-stat" htmlFor={`cnt-r-${widget.id}`}>Resetovat na:</label>
+          <input id={`cnt-r-${widget.id}`} type="number" value={resetValueInput} onChange={(e) => setResetValueInput(e.target.value)} className="input-stat" style={{ flex: 1 }} />
+        </div>
+
+        {/* 📐 Sdílené prvky pro mřížku a připínání */}
+        <WidgetSizeSelector value={gridSizeInput} onChange={setGridSizeInput} />
+        <WidgetPinToggle isPinned={isPinnedInput} onChange={setIsPinnedInput} />
+
         <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
           <button onClick={handleReset} type="button" className="btn-counter-reset-inside" style={{ flex: 1 }}>
-            🔄 Reset na 0
+            🔄 Resetovat
           </button>
           <button 
             onClick={handleSave} 

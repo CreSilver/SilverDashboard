@@ -11,19 +11,41 @@ export type WidgetType =
   | 'countup' 
   | 'embed';
 
+export type WidgetGridSize = 
+  | '1x1' | '1x2' | '1x3' | '1x4'
+  | '2x1' | '2x2' | '2x3' | '2x4'
+  | '3x1' | '3x2' | '3x3' | '3x4'
+  | '4x1' | '4x2' | '4x3' | '4x4';
 
-// Společný základ pro jakýkoliv widget
 export interface BaseWidget {
   id: string;      
   type: WidgetType; 
   title: string;    
+  gridSize?: WidgetGridSize;       
+  isPinnedToSummary?: boolean;     
 }
+
+
 
 export interface TableWidget extends BaseWidget {
   type: 'table';
   data: {
-    headers: string[];   
-    rows: string[][];    
+    headers: string[];
+    rows: string[][];
+  };
+}
+
+export interface TextWidget extends BaseWidget {
+  type: 'text';
+  data: {
+    text: string;
+  };
+}
+
+export interface EmbedWidget extends BaseWidget {
+  type: 'embed';
+  data: {
+    url: string;
   };
 }
 
@@ -49,7 +71,6 @@ export interface StatWidget extends BaseWidget {
   data: {
     chartType: 'bar' | 'pie';      
     items: ChartItem[];           
-    isPinnedToSummary: boolean;   
   };
 }
 
@@ -67,26 +88,6 @@ export interface ProgressWidget extends BaseWidget {
     currentValue: number;
     targetValue: number;
     unit?: string;
-    isPinnedToSummary: boolean; 
-  };
-}
-
-export interface Dashboard {
-  id: string;      
-  title: string;   
-  createdAt: number;     
-  widgets: DashboardWidget[]; 
-  themeColor?: string;
-  themeIcon?: string;
-}
-
-export interface TextWidget {
-  id: string;
-  type: 'text';
-  title: string;
-  data: {
-    text: string;
-    gridSize?: '1x1' | '2x1' | '1x2' | '2x2' | '3x2' | '4x2';
   };
 }
 
@@ -96,8 +97,6 @@ export interface BannerWidget extends BaseWidget {
     text: string;
     bgColor: string;
     textColor: string;
-    gridSize: '1x1' | '2x1' | '1x2' | '2x2';
-    isPinnedToSummary: boolean;
   };
 }
 
@@ -112,14 +111,11 @@ export interface LinksWidget extends BaseWidget {
   type: 'links';
   data: {
     items: LinkItem[];
-    isPinnedToSummary: boolean;
   };
 }
 
-export interface CounterWidget {
-  id: string;
+export interface CounterWidget extends BaseWidget {
   type: 'counter';
-  title: string;
   data: {
     currentValue: number;
     step: number;
@@ -127,25 +123,14 @@ export interface CounterWidget {
   };
 }
 
-export interface CountUpWidget {
-  id: string;
+export interface CountUpWidget extends BaseWidget {
   type: 'countup';
-  title: string;
   data: {
     startDate: string;
     label?: string;
   };
 }
 
-export interface EmbedWidget {
-  id: string;
-  type: 'embed';
-  title: string;
-  data: {
-    url: string;
-    gridSize: '1x1' | '2x1' | '1x2' | '2x2' | '3x2' | '4x2'; // 🚀 Možnosti velikosti
-  };
-}
 
 export type DashboardWidget =
   | StatWidget
@@ -159,3 +144,12 @@ export type DashboardWidget =
   | CounterWidget
   | CountUpWidget
   | EmbedWidget;
+
+export interface Dashboard {
+  id: string;      
+  title: string;   
+  createdAt: number;     
+  widgets: DashboardWidget[]; 
+  themeColor?: string;
+  themeIcon?: string;
+}
