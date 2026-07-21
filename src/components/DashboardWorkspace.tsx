@@ -277,7 +277,7 @@ function WidgetCard({ widget, index, totalWidgets, loading, activeMenuId, isEdit
   const [isEditing, setIsEditing] = useState(!widget.data || Object.keys(widget.data).length === 0 || (widget.type === 'counter' && widget.data?.currentValue === undefined));
 
   return (
-    <article className={`widget-card ${gridClass}`}>
+    <article className={`widget-card ${gridClass} ${isEditing ? 'is-editing-card' : ''}`}>
       <header className="widget-card-header">
         <div style={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 0, gap: '0.5rem' }}>
           {isEditMode && (

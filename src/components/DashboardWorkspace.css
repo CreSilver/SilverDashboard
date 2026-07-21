@@ -1,65 +1,91 @@
 /* =========================================================================
-   🛠️ OPRAVA VRSTVENÍ (HLAVIČKA DASHBOARDU)
+   🌐 DASHBOARD WORKSPACE - ČISTÝ A FLEXIBILNÍ CSS SYSTÉM
    ========================================================================= */
 
+/* -------------------------------------------------------------------------
+   1. HLAVNÍ STRUKTURA STRÁNKY
+   ------------------------------------------------------------------------- */
+.workspace-page-container {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* -------------------------------------------------------------------------
+   2. HLAVIČKA DASHBOARDU (Header & Dropdowny)
+   ------------------------------------------------------------------------- */
 .dashboard-header {
-  position: relative; /* 🚀 Krok 1: Vytvoří kotevní bod pro určování vrstev */
-  z-index: 100;       /* 🚀 Krok 2: Vytáhne celou hlavičku NAD mřížku widgetů */
+  position: relative;
+  z-index: 100;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2rem;
+  padding: 1.25rem 2rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.01);
-  backdrop-filter: blur(8px);
-}
-
-.dropdown-wrapper {
-  position: relative;
-  display: inline-block;
-  z-index: 101; /* 🚀 Pojistka pro správné umístění tlačítka a nabídek */
-}
-
-/* Plovoucí skleněné menu */
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: -2rem;
-  margin: 0.5rem 0 0 0;
-  padding: 0.5rem;
-  list-style: none;
-  background: rgba(20, 20, 20, 0.96); /* Mírně ztmavíme pozadí pro perfektní čitelnost */
+  background: rgba(20, 20, 20, 0.4);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  min-width: 170px;
-  box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.6);
-  z-index: 1000; /* V rámci hlavičky bude vždy nejvýše */
+}
+
+.title-container {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .dashboard-title {
   margin: 0;
-  font-size: 1.75rem;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: #f8fafc;
+}
+
+.input-rename {
+  font-size: 1.5rem;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid #34d399;
+  color: #f2f3f5;
+  border-radius: 8px;
+  padding: 0.2rem 0.6rem;
+  outline: none;
+  font-family: inherit;
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.2);
+}
+
+.btn-icon {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #949ba4;
+  cursor: pointer;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+  border-color: #34d399;
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.15);
 }
 
 .controls-section {
   display: flex;
+  align-items: center;
   gap: 0.75rem;
 }
 
-/* Hlavní horní tlačítka (+ Tabulka, + Statistika...) */
 .btn-add {
-  padding: 0.6rem 1.2rem;
+  padding: 0.55rem 1.1rem;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.03);
   color: #e2e8f0;
   font-weight: 600;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(4px);
@@ -70,166 +96,44 @@
   border-color: #34d399;
   color: #34d399;
   box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
-  transform: translateY(-1px);
 }
 
-.widgets-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  grid-auto-rows: minmax(340px, auto);
-  gap: 1.5rem;
-  padding: 2rem;
+.dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+  z-index: 101;
 }
 
-/* 🚀 HLAVNÍ SKLENĚNÁ KARTA WIDGETU */
-.widget-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
-  padding: 1.5rem;
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  list-style: none;
+  background: rgba(20, 20, 20, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  min-width: 190px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  z-index: 1000;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.35);
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-  min-width: 0;
-  overflow: auto; 
-}
-
-.widget-card:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
-}
-
-/* 🚀 FIX: Staré natvrdo vynucené roztažení tabulky 1 / -1 bylo kompletně smazáno odsud! */
-
-.widget-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding-bottom: 0.5rem;
-}
-
-.widget-card-title {
-  margin: 0;
-  font-size: 1.1rem;
-  color: #f1f5f9;
-  font-weight: 600;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 4rem 2rem;
-  color: #949ba4;
-}
-
-.title-container {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.input-rename {
-  font-size: 1.75rem;
-  font-weight: bold;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid #34d399;
-  color: #f2f3f5;
-  border-radius: 8px;
-  padding: 0.2rem 0.5rem;
-  outline: none;
-  font-family: inherit;
-  box-shadow: 0 0 12px rgba(52, 211, 153, 0.2);
-}
-
-/* Malá ikona tužky pro editaci */
-.btn-icon {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  cursor: pointer;
-  font-size: 1rem;
-  border-radius: 6px;
-  opacity: 0.8;
-  transition: all 0.2s;
-  padding: 0.3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-icon:hover {
-  opacity: 1;
-  border-color: #34d399;
-  background: rgba(52, 211, 153, 0.15);
-}
-
-/* Tlačítko Smazat místo */
-.btn-delete {
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  background: rgba(239, 68, 68, 0.05);
-  color: #fca5a5;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-delete:hover {
-  background: rgba(239, 68, 68, 0.18);
-  border-color: #ef4444;
-  color: #ef4444;
-  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
-}
-
-/* Šipky posunu pořadí prvků */
-.widget-order-controls {
-  display: flex;
   gap: 0.25rem;
-  margin-right: 0.75rem;
 }
 
-.btn-order {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  cursor: pointer;
-  font-size: 0.85rem;
-  border-radius: 6px;
-  padding: 0.25rem 0.4rem;
-  transition: all 0.2s ease;
-}
-
-.btn-order:hover:not(:disabled) {
-  border-color: #34d399;
-  background: rgba(52, 211, 153, 0.15);
-}
-
-.btn-order:disabled {
-  opacity: 0.15;
-  cursor: not-allowed;
-  border-color: transparent;
-}
-
-.widget-card.span-h-2 { grid-column: span 2; }
-/* 🚀 NOVINKA: Třída pro velké vícesloupcové tabulky zabírající 3 bloky */
-.widget-card.span-h-3 { grid-column: span 3; } 
-.widget-card.span-v-2 { grid-row: span 2; }
-.widget-card.span-4 { grid-column: span 2; grid-row: span 2; }
-
-
-/* Tlačítka uvnitř menu */
 .dropdown-item-btn {
   width: 100%;
   text-align: left;
   background: transparent;
   border: 1px solid transparent;
   color: #e2e8f0;
-  padding: 0.6rem 0.8rem;
+  padding: 0.55rem 0.75rem;
   border-radius: 6px;
   font-weight: 500;
+  font-size: 0.88rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -243,146 +147,121 @@
   color: #34d399;
 }
 
-/* 🗑️ GLOBÁLNÍ MAZACÍ TLAČÍTKO KARTY */
-.btn-delete-card {
-  opacity: 0.4;
+/* -------------------------------------------------------------------------
+   3. MŘÍŽKA WIDGETŮ (Minimální poměr 1:1, volně rostoucí výška)
+   ------------------------------------------------------------------------- */
+.widgets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-auto-rows: minmax(260px, auto); /* Minimum 260px výška (čtverec 1:1), ale roste bez omezení */
+  gap: 1.25rem;
+  padding: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #949ba4;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px dashed rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+/* Karta bez Y posuvníku s plným růstem podle obsahu */
+.widget-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 0;
+  box-sizing: border-box;
+  position: relative;
+  overflow: visible; /* Žádný vnitřní Y scrollbar */
+  height: 100%;
+}
+
+.widget-card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+}
+
+/* Zalamování textu v hlavičce karty */
+.widget-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  gap: 0.5rem;
+}
+
+.widget-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #f1f5f9;
+  font-weight: 600;
+  line-height: 1.3;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.widget-order-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.btn-order {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+  cursor: pointer;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  padding: 0.25rem 0.4rem;
   transition: all 0.2s ease;
 }
 
-.btn-delete-card:hover {
-  opacity: 1 !important;
-  color: #ef4444 !important;
-  background: rgba(239, 68, 68, 0.1) !important;
-  border-color: rgba(239, 68, 68, 0.3) !important;
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.15);
+.btn-order:hover:not(:disabled) {
+  border-color: #34d399;
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
 }
 
-/* =========================================================================
-   ⏳ FIX 2: NEPRŮSTŘELNÝ MOTOR PRO TIMER WIDGET (Ochrana proti ořezávání čísel)
-   ========================================================================= */
-.countdown-display {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.35rem;
-  flex-wrap: wrap; 
-  padding: 1rem 0;
-  width: 100%;
+.btn-order:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+  border-color: transparent;
 }
 
-.time-segment {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 4.2rem; 
-  width: auto !important; 
-}
+/* -------------------------------------------------------------------------
+   4. ROZMĚRY V MŘÍŽCE (Grid Spans)
+   ------------------------------------------------------------------------- */
+.widget-card.w-span-1 { grid-column: span 1; }
+.widget-card.w-span-2 { grid-column: span 2; }
+.widget-card.w-span-3 { grid-column: span 3; }
+.widget-card.w-span-4 { grid-column: span 4; }
 
-.time-number {
-  font-size: 2.25rem;
-  font-weight: 800;
-  line-height: 1;
-  color: #34d399; 
-  font-variant-numeric: tabular-nums; 
-}
+.widget-card.h-span-1 { grid-row: span 1; }
+.widget-card.h-span-2 { grid-row: span 2; }
+.widget-card.h-span-3 { grid-row: span 3; }
+.widget-card.h-span-4 { grid-row: span 4; }
 
-.time-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: #64748b;
-  margin-top: 0.25rem;
-  letter-spacing: 0.5px;
-}
-
-.time-separator {
-  font-size: 2rem;
-  font-weight: bold;
-  color: rgba(255, 255, 255, 0.15);
-  line-height: 1;
-  padding-bottom: 1rem; 
-}
-
-
-/* =========================================================================
-   📱 RESPONSIVE EXTENSION (Mobilní telefony a menší displaye)
-   ========================================================================= */
-@media (max-width: 768px) {
-  .dashboard-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.25rem;
-    padding: 1.5rem 1.5rem 1.5rem 4.5rem;
-  }
-
-  .title-container {
-    width: 100%;
-  }
-
-  .dashboard-title, .input-rename {
-    font-size: 1.4rem;
-  }
-
-  .controls-section {
-    width: 100%;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .dropdown-wrapper, .btn-delete {
-    flex: 1;
-    min-width: 130px;
-  }
-
-  .btn-add, .btn-delete {
-    width: 100%;
-    padding: 0.6rem 0.75rem;
-    font-size: 0.85rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .dropdown-menu {
-    width: 100%;
-    position: fixed;
-    top: auto;
-    left: 1rem;
-    right: 1rem;
-    bottom: 4.5rem;
-    box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
-  }
-
-  .widgets-grid {
-    grid-template-columns: 1fr !important;
-    padding: 1rem;
-    gap: 1rem;
-  }
-
-  /* 🚀 Přidána .span-h-3 do responzivního resetu na mobilu */
-  .widget-card.span-h-2,
-  .widget-card.span-h-3,
-  .widget-card.span-v-2,
-  .widget-card.span-4 {
-    grid-column: auto !important;
-    grid-row: auto !important;
-  }
-
-  .widget-card {
-    padding: 1rem;
-  }
-
-  .widget-order-controls button[title="Posunout doleva"] {
-    transform: rotate(90deg);
-  }
-
-  .widget-order-controls button[title="Posunout doprava"] {
-    transform: rotate(90deg);
-  }
-}
-
-/* =========================================================================
-   ⚙️ PLOVOUCÍ DROPDOWN MOŽNOSTÍ UVNITŘ KARTY WIDGETU
-   ========================================================================= */
+/* -------------------------------------------------------------------------
+   5. PLOVOUCÍ MENU KARTY
+   ------------------------------------------------------------------------- */
 .widget-context-menu {
   position: absolute;
   top: 100%;
@@ -390,9 +269,9 @@
   margin-top: 0.35rem;
   padding: 0.4rem;
   list-style: none;
-  background: rgba(25, 25, 25, 0.96); 
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(25, 25, 25, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   min-width: 150px;
@@ -409,7 +288,7 @@
   background: transparent;
   border: none;
   color: #dbdee1;
-  padding: 0.5rem 0.75rem;
+  padding: 0.45rem 0.65rem;
   border-radius: 5px;
   font-size: 0.85rem;
   font-weight: 500;
@@ -422,7 +301,7 @@
 
 .context-menu-item:hover {
   background: rgba(255, 255, 255, 0.04);
-  color: #34d399; 
+  color: #34d399;
 }
 
 .context-menu-item.item-danger {
@@ -430,40 +309,70 @@
 }
 
 .context-menu-item.item-danger:hover {
-  background: rgba(239, 68, 68, 0.08);
-  color: #ef4444; 
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
 }
 
-/* =========================================================================
-   📐 UNIFIKOVANÝ MATICOVÝ DEKODÉR ROZMĚRŮ (1x1 až 4x4)
-   ========================================================================= */
+/* -------------------------------------------------------------------------
+   6. STAV PŘI ÚPRAVÁCH (is-editing-card)
+   ------------------------------------------------------------------------- */
+.widget-card.is-editing-card {
+  z-index: 30;
+  border-color: rgba(52, 211, 153, 0.4);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 15px rgba(52, 211, 153, 0.12);
+}
 
-/* Definice pro ŠÍŘKU (sloupce) */
-.widget-card.w-span-1 { grid-column: span 1; }
-.widget-card.w-span-2 { grid-column: span 2; }
-.widget-card.w-span-3 { grid-column: span 3; }
-.widget-card.w-span-4 { grid-column: span 4; }
-
-/* Definice pro VÝŠKU (řádky) */
-.widget-card.h-span-1 { grid-row: span 1; }
-.widget-card.h-span-2 { grid-row: span 2; }
-.widget-card.h-span-3 { grid-row: span 3; }
-.widget-card.h-span-4 { grid-row: span 4; }
-
-/* Responzivní pojistka pro střední monitory a tablety */
+/* -------------------------------------------------------------------------
+   7. RESPONZIVITA
+   ------------------------------------------------------------------------- */
 @media (max-width: 1200px) {
   .widget-card.w-span-3,
   .widget-card.w-span-4 {
-    grid-column: span 2; /* Na menších obrazovkách se extrémně široké karty zmenší na max 2 sloupce */
+    grid-column: span 2;
   }
 }
 
-/* Responzivní pojistka pro mobilní telefony */
 @media (max-width: 768px) {
-  .widget-card.w-span-1, .widget-card.w-span-2, .widget-card.w-span-3, .widget-card.w-span-4 {
-    grid-column: span 1 !important; /* Na mobilech skočí vše pod sebe na plnou šířku */
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem 1rem;
   }
-  .widget-card.h-span-1, .widget-card.h-span-2, .widget-card.h-span-3, .widget-card.h-span-4 {
-    grid-row: span 1 !important; /* Výška se srovná na základní řádek */
+
+  .title-container,
+  .controls-section {
+    width: 100%;
+  }
+
+  .controls-section {
+    flex-wrap: wrap;
+  }
+
+  .btn-add {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .widgets-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: minmax(200px, auto);
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .widget-card.w-span-1,
+  .widget-card.w-span-2,
+  .widget-card.w-span-3,
+  .widget-card.w-span-4 {
+    grid-column: span 1;
+  }
+
+  .widget-card.h-span-1,
+  .widget-card.h-span-2,
+  .widget-card.h-span-3,
+  .widget-card.h-span-4 {
+    grid-row: span 1;
   }
 }

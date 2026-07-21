@@ -53,7 +53,18 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
     setIsPinnedInput(widget.isPinnedToSummary || false);
   }, [widget]);
 
-  // --- Handlery pro editační formulář ---
+  // Handler pro posun položky v seznamu (nahoru / dolů)
+  const handleMoveItem = (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= itemsInput.length) return;
+
+    const updated = [...itemsInput];
+    const temp = updated[index];
+    updated[index] = updated[targetIndex];
+    updated[targetIndex] = temp;
+    setItemsInput(updated);
+  };
+
   const handleAddItem = () => {
     if (!newItemText.trim()) return;
     const newItem: ListItem = {
@@ -65,7 +76,6 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
     setNewItemText('');
   };
 
-  // 🚀 NOVINKA: Handler pro přidání mezery / volného místa
   const handleAddSpacer = () => {
     const newSpacer: ListItem = {
       id: crypto.randomUUID(),
@@ -108,7 +118,7 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
     onCloseEdit();
   };
 
-  // --- Quick-check handler v režimu prohlížení ---
+  // Quick-check handler v režimu prohlížení
   const handleToggleInPreview = (id: string) => {
     const updatedItems = items.map(item => 
       item.id === id ? { ...item, completed: !item.completed } : item
@@ -123,9 +133,10 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
   // =========================================================================
   if (isEditing) {
     return (
-      <fieldset className="edit-form-section" style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+      <fieldset className="edit-form-section" style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem', width: '100%', boxSizing: 'border-box' }}>
         <legend style={{ display: 'none' }}>Nastavení seznamu</legend>
 
+        {/* Název widgetu */}
         <div className="widget-title-row">
           <label className="label-stat" htmlFor={`lst-t-${widget.id}`}>Název:</label>
           <input
@@ -134,22 +145,23 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
             value={titleInput}
             onChange={(e) => setTitleInput(e.target.value)}
             className="input-stat"
-            style={{ flex: 1 }}
+            style={{ flex: 1, minWidth: 0 }}
           />
         </div>
 
         {/* Přepínač režimu: Seznam vs ToDo List */}
         <div className="widget-title-row">
           <label className="label-stat">Režim:</label>
-          <div style={{ display: 'flex', gap: '0.4rem', flex: 1 }}>
+          <div style={{ display: 'flex', gap: '0.4rem', flex: 1, minWidth: 0 }}>
             <button
               type="button"
               onClick={() => setModeInput('standard')}
               className="btn-secondary"
               style={{
                 flex: 1,
-                borderColor: modeInput === 'standard' ? '#34d399' : undefined,
-                color: modeInput === 'standard' ? '#34d399' : undefined
+                borderColor: modeInput === 'standard' ? 'rgba(52, 211, 153, 0.4)' : undefined,
+                color: modeInput === 'standard' ? '#34d399' : undefined,
+                background: modeInput === 'standard' ? 'rgba(52, 211, 153, 0.12)' : undefined
               }}
             >
               📋 Seznam
@@ -160,8 +172,9 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
               className="btn-secondary"
               style={{
                 flex: 1,
-                borderColor: modeInput === 'todo' ? '#34d399' : undefined,
-                color: modeInput === 'todo' ? '#34d399' : undefined
+                borderColor: modeInput === 'todo' ? 'rgba(52, 211, 153, 0.4)' : undefined,
+                color: modeInput === 'todo' ? '#34d399' : undefined,
+                background: modeInput === 'todo' ? 'rgba(52, 211, 153, 0.12)' : undefined
               }}
             >
               ☑️ ToDo List
@@ -178,7 +191,7 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
               value={listStyleInput}
               onChange={(e) => setListStyleInput(e.target.value as ListStyleType)}
               className="input-stat"
-              style={{ flex: 1 }}
+              style={{ flex: 1, minWidth: 0 }}
             >
               <option value="bullet">• Tečkový (Odrážky)</option>
               <option value="numbered">1. Číselný (1, 2, 3)</option>
@@ -203,27 +216,53 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
         )}
 
         {/* Správa položek seznamu */}
-        <div style={{ borderTop: '1px dashed rgba(255,255,255,0.08)', paddingTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+        <div style={{ borderTop: '1px dashed rgba(255,255,255,0.08)', paddingTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%', boxSizing: 'border-box' }}>
           <label className="label-stat">Položky seznamu:</label>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', maxHeight: '140px', overflowY: 'auto', paddingRight: '0.25rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', maxHeight: '140px', overflowY: 'auto', overflowX: 'hidden', paddingRight: '0.2rem', width: '100%', boxSizing: 'border-box' }}>
             {itemsInput.length === 0 ? (
               <span style={{ fontSize: '0.8rem', color: '#64748b', fontStyle: 'italic' }}>Žádné položky. Přidej první níže.</span>
             ) : (
-              itemsInput.map((item) => (
+              itemsInput.map((item, idx) => (
                 <div 
                   key={item.id} 
                   className="form-row" 
                   style={{ 
-                    background: item.isSpacer ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.15)', 
-                    padding: '0.25rem 0.4rem', 
+                    background: item.isSpacer ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.18)', 
+                    padding: '0.35rem 0.5rem', 
                     borderRadius: '6px',
-                    border: item.isSpacer ? '1px dashed rgba(255,255,255,0.1)' : 'none'
+                    border: item.isSpacer ? '1px dashed rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.04)',
+                    gap: '0.4rem',
+                    width: '100%',
+                    boxSizing: 'border-box'
                   }}
                 >
-                  {/* 🚀 Vykreslení mezerového prvku v editoru */}
+                  {/* Tlačítka posunu pořadí */}
+                  <div style={{ display: 'flex', gap: '2px', flexShrink: 0 }}>
+                    <button
+                      type="button"
+                      onClick={() => handleMoveItem(idx, 'up')}
+                      disabled={idx === 0}
+                      className="btn-secondary"
+                      style={{ padding: '0.1rem 0.25rem', fontSize: '0.65rem' }}
+                      title="Posunout nahoru"
+                    >
+                      ⬆️
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMoveItem(idx, 'down')}
+                      disabled={idx === itemsInput.length - 1}
+                      className="btn-secondary"
+                      style={{ padding: '0.1rem 0.25rem', fontSize: '0.65rem' }}
+                      title="Posunout dolů"
+                    >
+                      ⬇️
+                    </button>
+                  </div>
+
                   {item.isSpacer ? (
-                    <span style={{ flex: 1, fontSize: '0.8rem', color: '#64748b', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <span style={{ flex: 1, minWidth: 0, fontSize: '0.8rem', color: '#64748b', fontStyle: 'italic' }}>
                       ↕️ Volné místo (Mezera)
                     </span>
                   ) : (
@@ -233,8 +272,8 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
                           type="checkbox"
                           checked={item.completed || false}
                           onChange={() => handleToggleItemCompletedInEdit(item.id)}
+                          style={{ cursor: 'pointer', flexShrink: 0 }}
                           title={item.completed ? "Označit jako nedokončené" : "Označit jako hotové"}
-                          style={{ cursor: 'pointer' }}
                         />
                       )}
                       <input
@@ -244,17 +283,20 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
                         className="input-stat"
                         style={{ 
                           flex: 1, 
+                          minWidth: 0,
                           textDecoration: (modeInput === 'todo' && item.completed) ? 'line-through' : 'none', 
                           opacity: (modeInput === 'todo' && item.completed) ? 0.6 : 1 
                         }}
                       />
                     </>
                   )}
+
                   <button
                     type="button"
                     onClick={() => handleRemoveItem(item.id)}
                     className="btn-secondary"
-                    style={{ color: '#fca5a5', padding: '0.2rem 0.4rem', fontSize: '0.75rem' }}
+                    style={{ color: '#fca5a5', padding: '0.15rem 0.4rem', fontSize: '0.75rem', borderColor: 'rgba(239, 68, 68, 0.3)', flexShrink: 0 }}
+                    title="Smazat položku"
                   >
                     🗑️
                   </button>
@@ -263,8 +305,8 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
             )}
           </div>
 
-          {/* Vstupy pro přidání položky nebo mezery */}
-          <div className="form-row" style={{ marginTop: '0.2rem', gap: '0.3rem' }}>
+          {/* 🚀 OCHRANA PROTI ZMÁČKNUTÍ: Vstup je nahoře s 100% šířkou, tlačítka přehledně pod ním */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', background: 'rgba(0,0,0,0.12)', padding: '0.5rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.04)', width: '100%', boxSizing: 'border-box' }}>
             <input
               type="text"
               placeholder="Nová položka..."
@@ -272,25 +314,30 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
               onChange={(e) => setNewItemText(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddItem())}
               className="input-stat"
-              style={{ flex: 1 }}
+              style={{ width: '100%', boxSizing: 'border-box' }}
             />
-            <button type="button" onClick={handleAddItem} className="btn-secondary" style={{ borderColor: '#34d399', color: '#34d399' }}>
-              ➕ Přidat
-            </button>
-            {/* 🚀 NOVINKA: Tlačítko pro vložení mezery */}
-            <button 
-              type="button" 
-              onClick={handleAddSpacer} 
-              className="btn-secondary" 
-              title="Vložit prázdné volné místo mezi položky"
-              style={{ borderColor: 'rgba(255,255,255,0.15)', color: '#94a3b8' }}
-            >
-              ↕️ Mezera
-            </button>
+            <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>
+              <button 
+                type="button" 
+                onClick={handleAddItem} 
+                className="btn-secondary" 
+                style={{ borderColor: 'rgba(52, 211, 153, 0.4)', color: '#34d399', fontWeight: 600 }}
+              >
+                ➕ Přidat
+              </button>
+              <button 
+                type="button" 
+                onClick={handleAddSpacer} 
+                className="btn-secondary" 
+                style={{ color: '#94a3b8' }}
+              >
+                ↕️ Mezera
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Unifikovaná mřížka a připínání */}
+        {/* Mřížka a připínání */}
         <WidgetSizeSelector value={gridSizeInput} onChange={setGridSizeInput} />
         <WidgetPinToggle isPinned={isPinnedInput} onChange={setIsPinnedInput} />
 
@@ -298,7 +345,7 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
           type="button"
           onClick={handleSave}
           className="btn-secondary"
-          style={{ backgroundColor: '#34d399', color: '#161a22', borderColor: '#34d399', fontWeight: 'bold', width: '100%', marginTop: '0.5rem', padding: '0.65rem', borderRadius: '8px', cursor: 'pointer' }}
+          style={{ backgroundColor: '#34d399', color: '#161a22', borderColor: '#34d399', fontWeight: 'bold', width: '100%', marginTop: '0.4rem', padding: '0.65rem', borderRadius: '8px', cursor: 'pointer' }}
         >
           💾 Uložit pokrok
         </button>
@@ -309,18 +356,15 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
   // =========================================================================
   // 2. REŽIM ZOBRAZENÍ (PREVIEW)
   // =========================================================================
-  // Spočítáme pouze reálné úkoly (ignorujeme mezerové prvky při výpočtu procent)
   const realItems = items.filter(i => !i.isSpacer);
   const totalCount = realItems.length;
   const completedCount = realItems.filter(i => i.completed).length;
   const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-  // Filtr nedokončených úkolů (včetně mezer) pro ToDo náhled
   const incompleteOrSpacerItems = items.filter(i => i.isSpacer || !i.completed);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: '0.5rem', width: '100%' }}>
-      {/* Ukazatel procent v ToDo režimu */}
       {mode === 'todo' && showPercentage && totalCount > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginBottom: '0.4rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>
@@ -333,21 +377,20 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
         </div>
       )}
 
-      {/* Vykreslení položek podle režimu */}
       {mode === 'standard' ? (
         items.length === 0 ? (
           <p style={{ color: '#64748b', fontSize: '0.85rem', fontStyle: 'italic', margin: 0, textAlign: 'center', padding: '1rem' }}>
             Seznam je zatím prázdný.
           </p>
         ) : (
-          <div style={{ overflowY: 'auto', flex: 1, paddingRight: '0.25rem' }}>
+          <div style={{ overflowY: 'auto', overflowX: 'hidden', flex: 1, paddingRight: '0.25rem' }}>
             {listStyle === 'bullet' && (
               <ul style={{ margin: 0, paddingLeft: '1.2rem', color: '#e2e8f0', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                 {items.map(item => 
                   item.isSpacer ? (
                     <li key={item.id} style={{ listStyleType: 'none', height: '0.75rem' }} />
                   ) : (
-                    <li key={item.id} style={{ fontSize: '0.9rem' }}>{item.text}</li>
+                    <li key={item.id} style={{ fontSize: '0.9rem', wordBreak: 'break-word' }}>{item.text}</li>
                   )
                 )}
               </ul>
@@ -358,7 +401,7 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
                   item.isSpacer ? (
                     <li key={item.id} style={{ listStyleType: 'none', height: '0.75rem' }} />
                   ) : (
-                    <li key={item.id} style={{ fontSize: '0.9rem' }}>{item.text}</li>
+                    <li key={item.id} style={{ fontSize: '0.9rem', wordBreak: 'break-word' }}>{item.text}</li>
                   )
                 )}
               </ol>
@@ -369,7 +412,7 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
                   item.isSpacer ? (
                     <li key={item.id} style={{ listStyleType: 'none', height: '0.75rem' }} />
                   ) : (
-                    <li key={item.id} style={{ fontSize: '0.9rem' }}>{item.text}</li>
+                    <li key={item.id} style={{ fontSize: '0.9rem', wordBreak: 'break-word' }}>{item.text}</li>
                   )
                 )}
               </ol>
@@ -377,13 +420,12 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
           </div>
         )
       ) : (
-        /* ToDo Náhled (Zobrazuje pouze nedokončené úkoly a mezery) */
         incompleteOrSpacerItems.length === 0 ? (
           <p style={{ color: totalCount > 0 ? '#34d399' : '#64748b', fontSize: '0.85rem', fontStyle: 'italic', margin: 0, textAlign: 'center', padding: '1rem' }}>
             {totalCount > 0 ? '🎉 Všechny úkoly jsou splněny!' : 'Žádné úkoly k vyřízení.'}
           </p>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', overflowY: 'auto', flex: 1, paddingRight: '0.25rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', overflowY: 'auto', overflowX: 'hidden', flex: 1, paddingRight: '0.25rem' }}>
             {incompleteOrSpacerItems.map(item => 
               item.isSpacer ? (
                 <div key={item.id} style={{ height: '0.75rem' }} />
@@ -408,9 +450,9 @@ export default function ListWidget({ widget, isEditing, onCloseEdit, onUpdate }:
                     type="checkbox"
                     checked={false}
                     onChange={() => {}}
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', flexShrink: 0 }}
                   />
-                  <span style={{ fontSize: '0.9rem', color: '#f1f5f9', flex: 1 }}>{item.text}</span>
+                  <span style={{ fontSize: '0.9rem', color: '#f1f5f9', flex: 1, wordBreak: 'break-word' }}>{item.text}</span>
                 </div>
               )
             )}

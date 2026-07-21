@@ -7,127 +7,74 @@
   flex-direction: column;
   gap: 0.75rem;
   padding: 1rem;
-  background: rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
   margin: 0;
   box-sizing: border-box;
+  width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden; /* Ochrana proti vodorovnému posuvu */
 }
 
-.widget-title-row {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  margin-bottom: 0.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding-bottom: 0.6rem;
-
-  .label-stat {
-    font-size: 0.85rem;
-    color: #949ba4;
-    min-width: 90px;
-    user-select: none;
-  }
-}
-
+.widget-title-row,
 .form-row {
   display: flex;
   gap: 0.5rem;
   align-items: center;
   width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+
+  .label-stat {
+    font-size: 0.85rem;
+    color: #949ba4;
+    min-width: 80px;
+    flex-shrink: 0;
+    user-select: none;
+  }
 }
 
-/* Skleněné textové vstupy */
 .input-stat {
-  padding: 0.45rem 0.6rem;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #f1f5f9;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
   outline: none;
   transition: all 0.2s ease;
   box-sizing: border-box;
+  flex: 1;
+  min-width: 0; /* Zamezí přetékání a roztahování karty */
 
   &:focus {
-    border-color: #34d399; /* Smaragdový akcent */
-    background: rgba(0, 0, 0, 0.3);
+    border-color: #34d399;
     box-shadow: 0 0 8px rgba(52, 211, 153, 0.2);
   }
 }
 
-/* Skleněný kalendářní vstup */
-.input-datetime {
-  background: rgba(0, 0, 0, 0.2) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  color: #dbdee1 !important;
-  padding: 0.55rem 0.75rem !important;
-  border-radius: 6px !important;
-  font-size: 0.9rem !important;
-  outline: none !important;
-  transition: all 0.2s ease !important;
-  font-family: inherit;
-
-  &:focus {
-    border-color: #34d399 !important;
-    background: rgba(0, 0, 0, 0.35) !important;
-    box-shadow: 0 0 10px rgba(52, 211, 153, 0.12);
-  }
-
-  &::-webkit-calendar-picker-indicator {
-    filter: invert(0.8) sepia(50%) saturate(1000%) hue-rotate(100deg);
-    cursor: pointer;
-    transition: transform 0.1s ease;
-
-    &:hover {
-      transform: scale(1.1);
-    }
-  }
-}
-
-/* Barevné tlamy a kapátka */
-.input-color {
-  width: 38px;
-  height: 34px;
-  padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: none;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: transform 0.1s ease;
-
-  &:hover {
-    transform: scale(1.05);
-  }
-}
-
-/* Sjednocená akční tlačítka */
 .btn-secondary {
-  padding: 0.45rem 0.85rem;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.04);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   color: #cbd5e1;
   cursor: pointer;
   font-size: 0.85rem;
   transition: all 0.2s ease;
-fun
-  &:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #f8fafc;
-    border-color: rgba(255, 255, 255, 0.15);
-  }
-}
+  white-space: nowrap;
 
-.pinned-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  color: #949ba4;
-  margin-top: 0.25rem;
-  cursor: pointer;
-  user-select: none;
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
 }
 
 /* =========================================================================
@@ -759,5 +706,63 @@ fun
   &:hover {
     background: rgba(52, 211, 153, 0.08) !important;
     border-color: rgba(52, 211, 153, 0.25) !important;
+  }
+}
+
+
+/* =========================================================================
+   1. CODESHARED & FORM ELEMENTS (Společné formuláře a tlačítka)
+   ========================================================================= */
+
+.edit-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  margin: 0;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden; /* Ochrana proti přetékání */
+}
+
+.widget-title-row,
+.form-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  width: 100%;
+  flex-wrap: wrap; /* 🚀 KLÍČOVÉ: Pokud se prvek nevejde, plynule se zalomí pod název */
+
+  .label-stat {
+    font-size: 0.85rem;
+    color: #949ba4;
+    min-width: 80px;
+    user-select: none;
+    flex-shrink: 0;
+  }
+}
+
+/* Skleněné textové vstupy */
+.input-stat {
+  padding: 0.45rem 0.6rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  min-width: 0; /* 🚀 Zamezí přetékání dlouhých textů v inputu */
+  flex: 1;
+
+  &:focus {
+    border-color: #34d399;
+    background: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 8px rgba(52, 211, 153, 0.2);
   }
 }
