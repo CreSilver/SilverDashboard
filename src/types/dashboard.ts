@@ -9,7 +9,8 @@ export type WidgetType =
   | 'links' 
   | 'counter' 
   | 'countup' 
-  | 'embed';
+  | 'embed'
+  | 'list';
 
 export type WidgetGridSize = 
   | '1x1' | '1x2' | '1x3' | '1x4'
@@ -131,19 +132,45 @@ export interface CountUpWidget extends BaseWidget {
   };
 }
 
+export type ListMode = 'standard' | 'todo';
+export type ListStyleType = 'bullet' | 'numbered' | 'alphabetical';
+export interface ListItem {
+  id: string;
+  text: string;
+  completed?: boolean;
+  isSpacer?: boolean;
+}
+// 5. Vnitřní data widgetu seznamu
+export interface ListWidgetData {
+  mode: ListMode;                  // 'standard' nebo 'todo'
+  listStyle?: ListStyleType;       // 'bullet' | 'numbered' | 'alphabetical'
+  showPercentage?: boolean;        // true = zobrazit např. "60% dokončeno"
+  items: ListItem[];
+}
+// 6. Samotné rozhraní ListWidgetu na root úrovni
+export interface ListWidget {
+  id: string;
+  type: 'list';
+  title: string;
+  gridSize?: WidgetGridSize;       // Správa velikosti (např. '2x2')
+  isPinnedToSummary?: boolean;     // Připnutí na Hlavní přehled
+  data: ListWidgetData;
+}
 
-export type DashboardWidget =
-  | StatWidget
-  | ProgressWidget
-  | TableWidget
-  | ImageWidget
-  | TextWidget
-  | TimerWidget
-  | BannerWidget
-  | LinksWidget
-  | CounterWidget
-  | CountUpWidget
-  | EmbedWidget;
+
+export type DashboardWidget = 
+  | StatWidget 
+  | ProgressWidget 
+  | TableWidget 
+  | ImageWidget 
+  | TextWidget 
+  | TimerWidget 
+  | BannerWidget 
+  | LinksWidget 
+  | CounterWidget 
+  | CountUpWidget 
+  | EmbedWidget
+  | ListWidget;
 
 export interface Dashboard {
   id: string;      

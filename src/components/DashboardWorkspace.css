@@ -1,4 +1,10 @@
+/* =========================================================================
+   🛠️ OPRAVA VRSTVENÍ (HLAVIČKA DASHBOARDU)
+   ========================================================================= */
+
 .dashboard-header {
+  position: relative; /* 🚀 Krok 1: Vytvoří kotevní bod pro určování vrstev */
+  z-index: 100;       /* 🚀 Krok 2: Vytáhne celou hlavičku NAD mřížku widgetů */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -6,6 +12,33 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(255, 255, 255, 0.01);
   backdrop-filter: blur(8px);
+}
+
+.dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+  z-index: 101; /* 🚀 Pojistka pro správné umístění tlačítka a nabídek */
+}
+
+/* Plovoucí skleněné menu */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: -2rem;
+  margin: 0.5rem 0 0 0;
+  padding: 0.5rem;
+  list-style: none;
+  background: rgba(20, 20, 20, 0.96); /* Mírně ztmavíme pozadí pro perfektní čitelnost */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  min-width: 170px;
+  box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.6);
+  z-index: 1000; /* V rámci hlavičky bude vždy nejvýše */
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .dashboard-title {
@@ -186,31 +219,6 @@
 .widget-card.span-v-2 { grid-row: span 2; }
 .widget-card.span-4 { grid-column: span 2; grid-row: span 2; }
 
-.dropdown-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-/* Plovoucí skleněné menu */
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: -2rem;
-  margin: 0.5rem 0 0 0;
-  padding: 0.5rem;
-  list-style: none;
-  background: rgba(25, 25, 25, 0.90);
-  backdrop-filter: blur(5rem);
-  -webkit-backdrop-filter: blur(5rem);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  min-width: 170px;
-  box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
 
 /* Tlačítka uvnitř menu */
 .dropdown-item-btn {
